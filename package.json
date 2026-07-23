@@ -1,0 +1,22 @@
+{
+  "name": "causal-order-proving",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test:smoke",
+    "test:smoke": "node scripts/run-smoke.mjs",
+    "results": "node scripts/standardize-result.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@causal-order/dedupe": "^1.2.0",
+    "@causal-order/monitor": "^0.6.0",
+    "@causal-order/testing": "^0.3.1",
+    "@causal-order/transport": "^0.2.0",
+    "causal-order": "^1.0.1"
+  }
+}
