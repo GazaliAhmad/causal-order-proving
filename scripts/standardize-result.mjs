@@ -219,6 +219,10 @@ Generated from \`${result.identity.summaryPath}\` at ${result.identity.standardi
 export async function standardizeResult(inputPath, testIdOverride, startedAfterMs) {
   const summaryPath = await resolveSummaryPath(inputPath, startedAfterMs);
   const runDir = path.dirname(summaryPath);
+  const existingResultPath = path.join(runDir, "standard-result.json");
+  const existingResult = (await exists(existingResultPath))
+    ? JSON.parse(await readFile(existingResultPath, "utf8"))
+    : null;
   const summary = JSON.parse(await readFile(summaryPath, "utf8"));
   const heartbeats = await readNdjson(path.join(runDir, "heartbeats.ndjson"));
   const monitorHeartbeats = await readNdjson(
@@ -264,8 +268,13 @@ export async function standardizeResult(inputPath, testIdOverride, startedAfterM
       runName: summary.config?.runName ?? path.basename(runDir),
       runDir,
       summaryPath,
-      standardizedAt: new Date().toISOString(),
-      gitCommit: await readGitCommit(),
+      standardizedAt:
+        existingResult?.identity?.standardizedAt ?? new Date().toISOString(),
+      gitCommit:
+        existingResult?.identity &&
+        Object.hasOwn(existingResult.identity, "gitCommit")
+          ? existingResult.identity.gitCommit
+          : await readGitCommit(),
       packageVersions: await readPackageVersions(),
     },
     environment: {
@@ -493,7 +502,7 @@ export async function standardizeResult(inputPath, testIdOverride, startedAfterM
     ),
   ];
 
-  const jsonPath = path.join(runDir, "standard-result.json");
+  const jsonPath = existingResultPath;
   const markdownPath = path.join(runDir, "standard-result.md");
   await writeFile(jsonPath, `${JSON.stringify(result, null, 2)}\n`, "utf8");
   await writeFile(markdownPath, renderMarkdown(result), "utf8");
