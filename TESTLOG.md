@@ -2,6 +2,73 @@
 
 Chronological record of executed causal-order stack tests. This repository uses a test log rather than a software changelog.
 
+## 2026-07-23 — SMOKE-04
+
+| Field | Result |
+| --- | --- |
+| Test | npm 12 requalification smoke test |
+| Runtime | Node `24.15.0`, npm `12.0.1` |
+| Install | Clean `npm ci` from the existing lockfile |
+| Duration | 10 minutes wall-clock |
+| Profile | `typical-real-world-mesh` |
+| Faults | None |
+| Status | `completed` |
+| Verdict | `pass` |
+| Generated | 9,985 |
+| Duplicates injected/dropped | 3 / 3 |
+| Transport received | 9,988 |
+| Ordered | 9,985 |
+| Anomalies | 0 |
+| Duplicate leakage | 0 |
+| Peak node queue | 7 |
+| Peak RSS | 112.6 MB |
+| Final pending work | 0 |
+
+npm 12.0.1 requalification passed after a clean locked install. All standardized accounting, final-state, shutdown, and verdict checks passed, with normal monitor routing, zero anomalies, zero duplicate leakage, and no pending work.
+
+Harness command:
+
+```bash
+causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --duration 10m --steady-for 10m --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --run-name smoke-clean-8n-10m
+```
+
+- [Standard report](artifacts/runs/2026-07-23T22-52-09Z-smoke-clean-8n-10m/standard-result.md)
+- [Raw harness summary](artifacts/runs/2026-07-23T22-52-09Z-smoke-clean-8n-10m/summary.json)
+
+## 2026-07-23 — T01
+
+| Field | Result |
+| --- | --- |
+| Test | Eight-node wall-clock baseline |
+| Duration | 8 hours wall-clock |
+| Profile | `typical-real-world-mesh` |
+| Faults | None |
+| Status | `completed` |
+| Harness verdict | `pass` |
+| Generated | 481,138 |
+| Duplicates injected/dropped | 387 / 387 |
+| Transport received | 481,525 |
+| Ordered | 481,138 |
+| Anomalies | 13 warning-level `sequence_regression` |
+| Duplicate leakage | 0 |
+| Peak node queue | 16 |
+| Peak RSS | 716.1 MB |
+| Final pending work | 0 |
+
+The published harness passed the run. All eight nodes remained represented, the workload completed 8 hours at `timeScale=1`, every generated unique event was ordered, every injected duplicate was dropped, monitor routing remained normal, and the callback, ordering, lifecycle, monitor, and resource shutdown barriers completed with no pending work.
+
+The 13 anomalies are warning-level sequence-regression diagnostics across six nodes. The run used the harness defaults `strict=false` and `allowUnknownOrder=true`; the published healthy-scenario verdict does not classify these warnings as contract failures. They are retained as a baseline observation and must be compared explicitly in later runs.
+
+Harness command:
+
+```bash
+causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --duration 8h --steady-for 8h --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --run-name T01-baseline-8n-8h
+```
+
+- [Standard report](artifacts/runs/2026-07-23T13-43-45Z-t01-baseline-8n-8h/standard-result.md)
+- [Raw harness summary](artifacts/runs/2026-07-23T13-43-45Z-t01-baseline-8n-8h/summary.json)
+- [Anomaly evidence](artifacts/runs/2026-07-23T13-43-45Z-t01-baseline-8n-8h/anomalies.ndjson)
+
 ## 2026-07-23 — SMOKE-03
 
 | Field | Result |
