@@ -2,12 +2,9 @@
 
 ## Objective
 
-Establish a healthy reference run for the published stack before injecting any
-faults.
+Establish a healthy reference run for the published stack before injecting any faults.
 
-The baseline must prove that the installed package versions connect correctly,
-events traverse the complete pipeline, operational evidence is coherent, and
-the stack drains cleanly after sustained wall-clock operation.
+The baseline must prove that the installed package versions connect correctly, events traverse the complete pipeline, operational evidence is coherent, and the stack drains cleanly after sustained wall-clock operation.
 
 ```text
 eight nodes
@@ -17,8 +14,7 @@ eight nodes
   -> causal-order
 ```
 
-`@causal-order/testing` is the harness. It generates the workload, records
-evidence, and assigns the verdict.
+`@causal-order/testing` is the harness. It generates the workload, records evidence, and assigns the verdict.
 
 ## Requirements
 
@@ -29,8 +25,7 @@ The baseline must:
 - use the published `@causal-order/transport/testing` adapter;
 - enable the monitor-aware delivery path;
 - run a healthy, steady workload for the entire requested duration;
-- retain configuration, delivery, dedupe, ordering, monitor, and shutdown
-  evidence; and
+- retain configuration, delivery, dedupe, ordering, monitor, and shutdown evidence; and
 - finish with a `pass` verdict.
 
 The canonical nodes are:
@@ -42,25 +37,19 @@ edge-a, edge-b, edge-c, edge-d, edge-e, edge-f, edge-g, edge-h
 ## Constraints
 
 - Treat all installed package APIs as immutable.
-- Use only the published `@causal-order/testing` executable and the published
-  `@causal-order/transport/testing` adapter.
-- Do not use mocks, local substitute stages, internal package imports, invented
-  functions, or shortcuts around the delivery path.
+- Use only the published `@causal-order/testing` executable and the published `@causal-order/transport/testing` adapter.
+- Do not use mocks, local substitute stages, internal package imports, invented functions, or shortcuts around the delivery path.
 - Do not inject node jitter, dark-node windows, or component outages.
 - Do not enable a fault-oriented monitor scenario.
 - Do not accelerate time.
 - Do not change the node count or bypass the real transport adapter.
 - Shorter runs are diagnostic only and do not replace the baseline.
 - The run must have its own artifact directory and stable run name.
-- The stack must be allowed to complete its bounded recovery, drain, and
-  shutdown work after the eight-hour workload ends.
+- The stack must be allowed to complete its bounded recovery, drain, and shutdown work after the eight-hour workload ends.
 
-Ordinary transport latency, normal duplicate noise, and causal dependencies
-from the workload profile are baseline traffic characteristics, not injected
-failures.
+Ordinary transport latency, normal duplicate noise, and causal dependencies from the workload profile are baseline traffic characteristics, not injected failures.
 
-The initial clean diagnostic uses the same eight-node stack and wall clock but
-runs for ten minutes:
+The initial clean diagnostic uses the same eight-node stack and wall clock but runs for ten minutes:
 
 ```bash
 npm run test:smoke
@@ -109,15 +98,12 @@ Test 01 passes only when:
 - all eight nodes appear in the evidence;
 - the workload reaches eight wall-clock hours without interruption;
 - the installed packages load without compatibility or contract errors;
-- events traverse every stack boundary using the expected event,
-  acknowledgment, health, and lifecycle contracts;
+- events traverse every stack boundary using the expected event, acknowledgment, health, and lifecycle contracts;
 - monitor remains healthy and does not accumulate unexplained buffered work;
 - dedupe decisions account for normal duplicate noise;
 - causal ordering settles without an unexplained contract violation;
-- no monitor, lifecycle, transport, or ordering work remains pending at final
-  capture;
+- no monitor, lifecycle, transport, or ordering work remains pending at final capture;
 - callback, drain, and shutdown barriers complete; and
 - the harness records `pass`.
 
-No fault-injection run begins until this baseline has passed and its artifacts
-have been retained.
+No fault-injection run begins until this baseline has passed and its artifacts have been retained.

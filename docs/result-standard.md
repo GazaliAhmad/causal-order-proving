@@ -5,9 +5,7 @@ Every harness run is converted to two files in its artifact directory:
 - `standard-result.json` for stable machine-readable comparison;
 - `standard-result.md` for operator review.
 
-Standardization is post-processing only. It reads harness artifacts and does
-not call, replace, or alter stack runtime APIs. The harness verdict is copied
-without reinterpretation.
+Standardization is post-processing only. It reads harness artifacts and does not call, replace, or alter stack runtime APIs. The harness verdict is copied without reinterpretation.
 
 Generate both for the latest run:
 
@@ -21,8 +19,7 @@ Generate them for a specific run and test ID:
 npm run results -- artifacts/runs/<run-folder> --test-id T01
 ```
 
-The schema identifier is `causal-order-proving/result` and its initial version
-is `1`.
+The schema identifier is `causal-order-proving/result` and its initial version is `1`.
 
 ## Stable sections
 
@@ -51,15 +48,8 @@ Checks use:
 - `pass` when the invariant is satisfied;
 - `review` when the value differs from the invariant.
 
-An accounting check marked `review` does not automatically mean a fault test
-failed. Buffering, admission refusal, or an explicitly permitted degraded route
-can change the equality. The harness verdict and scenario contract remain the
-authority; the standardized deltas make the difference visible and comparable.
+An accounting check marked `review` does not automatically mean a fault test failed. Buffering, admission refusal, or an explicitly permitted degraded route can change the equality. The harness verdict and scenario contract remain the authority; the standardized deltas make the difference visible and comparable.
 
-Runtime component health and shutdown-final component health are stored
-separately. This prevents normal transport teardown from being interpreted as a
-runtime outage.
+Runtime component health and shutdown-final component health are stored separately. This prevents normal transport teardown from being interpreted as a runtime outage.
 
-Metrics not emitted by the installed harness are retained as `null` and listed
-under `performance.unavailableMetrics`. This keeps the schema stable and makes
-instrumentation gaps visible instead of silently omitting them.
+Metrics not emitted by the installed harness are retained as `null` and listed under `performance.unavailableMetrics`. This keeps the schema stable and makes instrumentation gaps visible instead of silently omitting them.

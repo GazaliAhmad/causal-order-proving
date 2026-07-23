@@ -2,8 +2,7 @@
 
 ## Purpose
 
-Qualify the installed causal-order stack as one connected system and prove that
-`@causal-order/monitor` contains and recovers from supported runtime failures.
+Qualify the installed causal-order stack as one connected system and prove that `@causal-order/monitor` contains and recovers from supported runtime failures.
 
 ```text
 eight nodes
@@ -13,32 +12,21 @@ eight nodes
   -> causal-order
 ```
 
-`@causal-order/testing` is the harness. It generates traffic, injects faults,
-records transitions and outcomes, and assigns the verdict.
+`@causal-order/testing` is the harness. It generates traffic, injects faults, records transitions and outcomes, and assigns the verdict.
 
 ## Non-negotiable API rules
 
 - Treat every installed stack package as immutable.
 - Do not modify, monkey-patch, wrap, or replace a package API for a test.
-- Use only documented package exports, executables, adapters, options, event
-  contracts, and lifecycle methods.
-- Do not import package internals or address files that are not published API
-  entry points.
-- Do not invent local stack functions, substitute implementations, mocks, or
-  compatibility shims.
-- Do not call a downstream stage directly to bypass transport, monitor, dedupe,
-  or causal-order.
-- Workloads, fault injection, orchestration, recovery sequencing, and verdicts
-  must come from the installed `@causal-order/testing` harness.
-- Local code may launch a published harness command and normalize its emitted
-  artifacts. It must not change runtime behavior or reinterpret the harness
-  verdict.
+- Use only documented package exports, executables, adapters, options, event contracts, and lifecycle methods.
+- Do not import package internals or address files that are not published API entry points.
+- Do not invent local stack functions, substitute implementations, mocks, or compatibility shims.
+- Do not call a downstream stage directly to bypass transport, monitor, dedupe, or causal-order.
+- Workloads, fault injection, orchestration, recovery sequencing, and verdicts must come from the installed `@causal-order/testing` harness.
+- Local code may launch a published harness command and normalize its emitted artifacts. It must not change runtime behavior or reinterpret the harness verdict.
 - Record the exact package versions and harness command for every run.
 
-If the installed harness cannot express a planned scenario through its
-published surface, that scenario is `not runnable`. It remains pending until a
-released harness version supports it. This repository must not fill the gap
-with made-up functions or shortcuts.
+If the installed harness cannot express a planned scenario through its published surface, that scenario is `not runnable`. It remains pending until a released harness version supports it. This repository must not fill the gap with made-up functions or shortcuts.
 
 ## Common contract
 
@@ -53,14 +41,11 @@ Every test:
 - retains an independent artifact directory and stable run name; and
 - completes recovery, drain, callback barriers, and bounded shutdown.
 
-Every retained run must also be converted to the versioned
-[standard result format](result-standard.md).
+Every retained run must also be converted to the versioned [standard result format](result-standard.md).
 
 Shorter or accelerated runs are diagnostic and do not qualify.
 
-For upstream node and transport failures, evidence must distinguish events that
-never reached monitor from work accepted by monitor. Monitor is responsible for
-accounting for accepted work; it cannot retain an event it never received.
+For upstream node and transport failures, evidence must distinguish events that never reached monitor from work accepted by monitor. Monitor is responsible for accounting for accepted work; it cannot retain an event it never received.
 
 ## Execution gates
 
@@ -68,13 +53,10 @@ Tests run in this order:
 
 1. The healthy baseline must pass before any fault test begins.
 2. All four single-fault tests must pass before pairwise tests begin.
-3. A pairwise test begins only after both corresponding single-fault tests
-   pass.
+3. A pairwise test begins only after both corresponding single-fault tests pass.
 4. The all-at-once test begins only after all pairwise tests pass.
 
-A failed or invalid run retains its artifacts, is diagnosed, and is rerun under
-the same test ID. Changing the scenario creates a new run; it does not replace
-the failed evidence.
+A failed or invalid run retains its artifacts, is diagnosed, and is rerun under the same test ID. Changing the scenario creates a new run; it does not replace the failed evidence.
 
 ## Harness coverage
 
@@ -86,10 +68,7 @@ The installed harness already exposes:
 - `monitor-order-outage`; and
 - `monitor-dual-outage`.
 
-T06 through T10 and T12 require composed fault configuration so their requested
-windows overlap in one run. They may run only when the installed harness
-exposes that composition through its published surface. Until then, they remain
-`not runnable`; this repository will not emulate composition locally.
+T06 through T10 and T12 require composed fault configuration so their requested windows overlap in one run. They may run only when the installed harness exposes that composition through its published surface. Until then, they remain `not runnable`; this repository will not emulate composition locally.
 
 ## Planned tests
 
@@ -101,21 +80,18 @@ Proves:
 
 - all installed package versions load and connect;
 - all eight nodes can deliver through the complete stack;
-- event, acknowledgment, health, and lifecycle contracts agree at every
-  boundary;
+- event, acknowledgment, health, and lifecycle contracts agree at every boundary;
 - normal duplicate noise is accounted for;
 - monitor does not accumulate unexplained buffered work; and
 - the stack remains stable for eight hours and shuts down fully drained.
 
 Expected verdict: `pass`.
 
-Detailed specification:
-[Test 01: eight-node wall-clock baseline](test-01-wall-clock.md).
+Detailed specification: [Test 01: eight-node wall-clock baseline](test-01-wall-clock.md).
 
 ### T02 — Node jitter and dark-node recovery
 
-Faults: at least one node receives injected jitter and at least one different
-node goes dark and rejoins. All eight nodes remain configured.
+Faults: at least one node receives injected jitter and at least one different node goes dark and rejoins. All eight nodes remain configured.
 
 Proves:
 
@@ -129,8 +105,7 @@ Expected verdict: `pass`.
 
 ### T03 — Transport outage
 
-Faults: transport connectivity or delivery becomes unavailable and later
-recovers.
+Faults: transport connectivity or delivery becomes unavailable and later recovers.
 
 Proves:
 
@@ -151,14 +126,12 @@ Proves:
 
 - monitor detects the unhealthy dependency;
 - any configured direct-to-order bypass is bounded and observable;
-- bypassed events and possible duplicate leakage are explicitly accounted for;
-  and
+- bypassed events and possible duplicate leakage are explicitly accounted for; and
 - normal dedupe routing resumes after recovery.
 
 Harness scenario: `monitor-dedupe-outage`.
 
-Expected verdict: `pass_with_expected_degradation` when bypass is enabled;
-otherwise `pass`.
+Expected verdict: `pass_with_expected_degradation` when bypass is enabled; otherwise `pass`.
 
 ### T05 — Causal-order outage
 
@@ -200,8 +173,7 @@ Proves:
 - duplicate consequences remain attributable; and
 - restored nodes return to the normal dedupe path.
 
-Expected verdict: scenario-aware `pass` or
-`pass_with_expected_degradation`.
+Expected verdict: scenario-aware `pass` or `pass_with_expected_degradation`.
 
 ### T08 — Nodes and causal-order fail together
 
@@ -227,8 +199,7 @@ Proves:
 - bypass behavior occurs only while allowed; and
 - normal acknowledged delivery through dedupe resumes.
 
-Expected verdict: scenario-aware `pass` or
-`pass_with_expected_degradation`.
+Expected verdict: scenario-aware `pass` or `pass_with_expected_degradation`.
 
 ### T10 — Transport and causal-order fail together
 
@@ -261,8 +232,7 @@ Expected verdict: `pass`.
 
 ### T12 — Nodes, transport, dedupe, and causal-order fail together
 
-Faults: node jitter/darkness overlaps transport, dedupe, and causal-order
-outages.
+Faults: node jitter/darkness overlaps transport, dedupe, and causal-order outages.
 
 Proves:
 
@@ -287,8 +257,7 @@ Each artifact set must contain enough information to verify:
 - ordered output, corrections, and anomalies;
 - requested versus observed fault windows;
 - recovery milestones and post-recovery state; and
-- final pending counts, callback barriers, drain state, shutdown state, and
-  verdict.
+- final pending counts, callback barriers, drain state, shutdown state, and verdict.
 
 ## Program completion
 
@@ -299,5 +268,4 @@ The program contains 12 tests and 96 harness-hours when run sequentially:
 - 48 hours of pairwise tests; and
 - 8 hours of all-at-once testing.
 
-The stack is qualified only when all 12 test IDs have retained, reviewable
-evidence and their expected successful verdicts.
+The stack is qualified only when all 12 test IDs have retained, reviewable evidence and their expected successful verdicts.

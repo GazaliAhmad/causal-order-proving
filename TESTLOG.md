@@ -1,7 +1,6 @@
 # Test log
 
-Chronological record of executed causal-order stack tests. This repository uses
-a test log rather than a software changelog.
+Chronological record of executed causal-order stack tests. This repository uses a test log rather than a software changelog.
 
 ## 2026-07-23 — SMOKE-03
 
@@ -22,9 +21,7 @@ a test log rather than a software changelog.
 | Peak RSS | 113.8 MB |
 | Final pending work | 0 |
 
-All standardized accounting, final-state, shutdown, and verdict checks passed.
-Across all three smoke runs, duplicate leakage and anomalies remained zero,
-peak queue depth remained 7, and final pending work remained zero.
+All standardized accounting, final-state, shutdown, and verdict checks passed. Across all three smoke runs, duplicate leakage and anomalies remained zero, peak queue depth remained 7, and final pending work remained zero.
 
 Harness command:
 

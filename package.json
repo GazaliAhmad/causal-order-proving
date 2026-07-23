@@ -6,7 +6,8 @@
   "scripts": {
     "test": "npm run test:smoke",
     "test:smoke": "node scripts/run-smoke.mjs",
-    "results": "node scripts/standardize-result.mjs"
+    "results": "node scripts/standardize-result.mjs",
+    "format:docs": "node scripts/format-markdown.mjs"
   },
   "keywords": [],
   "author": "",
