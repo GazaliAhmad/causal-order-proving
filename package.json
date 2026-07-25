@@ -8,6 +8,7 @@
     "test:smoke": "node scripts/run-smoke.mjs",
     "results": "node scripts/standardize-result.mjs",
     "format:docs": "node scripts/format-markdown.mjs",
+    "finalize-test": "node scripts/finalize-test.mjs",
     "t01": "npx --no-install causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --duration 8h --steady-for 8h --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --run-name T01-baseline-8n-8h",
     "t02": "npx --no-install causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --duration 8h --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --jitter-nodes edge-a --dark-nodes edge-b --dark-start-after 10m --run-name T02-jitter-dark-8n-8h",
     "t03": "npx --no-install causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --monitor-scenario monitor-transport-outage-burst --duration 8h --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --run-name T03-transport-outage-8n-8h",
