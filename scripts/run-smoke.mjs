@@ -1,6 +1,59 @@
 import { spawn } from "node:child_process";
 import process from "node:process";
+import { execSync } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
 import { standardizeResult } from "./standardize-result.mjs";
+
+// Check if harness supports composed fault scenarios (--jitter-nodes + --monitor-scenario)
+export async function checkCompositionSupport() {
+  try {
+    console.log("🔍 Checking harness composition support...");
+    
+    // Query harness help to see if both flags are documented
+    const helpOutput = execSync(
+      "npx --no-install causal-order-testing-adapter-runtime --help",
+      { encoding: "utf8", stdio: "pipe" }
+    );
+    
+    const hasJitterNodes = helpOutput.includes("--jitter-nodes");
+    const hasMonitorScenario = helpOutput.includes("--monitor-scenario");
+    const supportsComposition = hasJitterNodes && hasMonitorScenario;
+    
+    // Ensure artifacts directory exists
+    const artifactsDir = "artifacts";
+    if (!fs.existsSync(artifactsDir)) {
+      fs.mkdirSync(artifactsDir, { recursive: true });
+    }
+    
+    const flagFile = path.join(artifactsDir, ".composition-supported");
+    fs.writeFileSync(flagFile, String(supportsComposition));
+    
+    console.log(`   ${supportsComposition ? "✅" : "⚠️"} Composition support: ${supportsComposition ? "YES" : "NO"}`);
+    console.log(`   Flag file: ${flagFile}`);
+    
+    return supportsComposition;
+  } catch (error) {
+    console.error(`⚠️  Could not determine composition support: ${error instanceof Error ? error.message : error}`);
+    console.log(`   Assuming composition is NOT supported (conservative)`);
+    
+    const artifactsDir = "artifacts";
+    if (!fs.existsSync(artifactsDir)) {
+      fs.mkdirSync(artifactsDir, { recursive: true });
+    }
+    
+    const flagFile = path.join(artifactsDir, ".composition-supported");
+    fs.writeFileSync(flagFile, "false");
+    
+    return false;
+  }
+}
+
+// Check if this script was run to check composition support
+if (process.argv.includes("--check-composition")) {
+  await checkCompositionSupport();
+  process.exit(0);
+}
 
 const startedAt = Date.now();
 const npmCli = process.env.npm_execpath;

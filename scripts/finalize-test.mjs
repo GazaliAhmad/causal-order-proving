@@ -5,6 +5,70 @@ import path from "path";
 import { execSync } from "child_process";
 import crypto from "crypto";
 
+// Audit test compliance against test-plan.md constraints
+function auditTestCompliance(testNum, runPath) {
+  console.log(`\n🔍 Auditing test compliance...`);
+  
+  try {
+    // 1. Log package versions from package-lock.json
+    const lockPath = path.resolve("package-lock.json");
+    const lock = JSON.parse(fs.readFileSync(lockPath, "utf8"));
+    const packages = {
+      "causal-order": lock.packages?.["node_modules/causal-order"]?.version,
+      "@causal-order/transport": lock.packages?.["node_modules/@causal-order/transport"]?.version,
+      "@causal-order/monitor": lock.packages?.["node_modules/@causal-order/monitor"]?.version,
+      "@causal-order/dedupe": lock.packages?.["node_modules/@causal-order/dedupe"]?.version,
+      "@causal-order/testing": lock.packages?.["node_modules/@causal-order/testing"]?.version,
+    };
+    console.log(`   📦 Stack package versions:`);
+    Object.entries(packages).forEach(([pkg, ver]) => {
+      console.log(`      ${pkg}: ${ver || "NOT FOUND"}`);
+    });
+    
+    // 2. Verify telemetry files exist
+    const healthPath = path.join(runPath, "monitor-health.ndjson");
+    const replayPath = path.join(runPath, "monitor-replay.ndjson");
+    if (!fs.existsSync(healthPath)) {
+      throw new Error(`monitor-health.ndjson not found at ${healthPath}`);
+    }
+    if (!fs.existsSync(replayPath)) {
+      throw new Error(`monitor-replay.ndjson not found at ${replayPath}`);
+    }
+    console.log(`   ✅ Telemetry files present (health: ${fs.statSync(healthPath).size} bytes, replay: ${fs.statSync(replayPath).size} bytes)`);
+    
+    // 3. Validate test config against test-plan.md Common contract
+    const summaryPath = path.join(runPath, "summary.json");
+    if (!fs.existsSync(summaryPath)) {
+      throw new Error(`summary.json not found at ${summaryPath}`);
+    }
+    const summary = JSON.parse(fs.readFileSync(summaryPath, "utf8"));
+    
+    const nodeCount = summary.config?.nodeIds?.length || 0;
+    if (nodeCount !== 8) {
+      throw new Error(`Expected 8 nodes, got ${nodeCount}`);
+    }
+    
+    const timeScale = summary.config?.timeScale || 0;
+    if (timeScale !== 1) {
+      throw new Error(`Expected time-scale 1, got ${timeScale}`);
+    }
+    
+    const durationMs = summary.config?.durationMs || 0;
+    const durationHours = durationMs / (1000 * 60 * 60);
+    if (durationMs < 8 * 60 * 60 * 1000) {
+      throw new Error(`Expected duration >= 8h, got ${durationHours.toFixed(1)}h`);
+    }
+    
+    console.log(`   ✅ Test configuration complies with test-plan.md:`);
+    console.log(`      Nodes: ${nodeCount}, Time-scale: ${timeScale}x, Duration: ${durationHours.toFixed(1)}h`);
+    
+    return packages;
+  } catch (error) {
+    console.error(`   ❌ Compliance audit failed: ${error.message}`);
+    process.exit(1);
+  }
+}
+
 const testRunPath = process.argv[2];
 
 if (!testRunPath) {
@@ -56,6 +120,9 @@ const result = JSON.parse(fs.readFileSync(resultJsonPath, "utf8"));
 const verdict = result.result.verdict.toUpperCase();
 const eventsGenerated = result.traffic.generated;
 const anomalies = result.ordering.anomalies;
+
+// Step 2.5: Audit compliance
+auditTestCompliance(testNum, fullPath);
 
 // Step 3: Create documentation
 console.log(`\n3️⃣  Creating documentation...`);
