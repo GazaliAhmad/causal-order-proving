@@ -20,6 +20,7 @@ Only `released` behavior may be used by qualification tests.
 | Target | Proposal | Status |
 | --- | --- | --- |
 | `@causal-order/testing` | [Wall-clock performance observability](testing-wall-clock-observability.md) | Proposed |
+| `@causal-order/testing` | [Fault event timeline](testing-fault-event-timeline.md) | Proposed |
 
 ## Adding proposals
 
