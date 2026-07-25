@@ -2,6 +2,41 @@
 
 Chronological record of executed causal-order stack tests. This repository uses a test log rather than a software changelog.
 
+## 2026-07-24 — T02
+
+| Field | Result |
+| --- | --- |
+| Test | Eight-node jitter and dark-window recovery |
+| Duration | 8 hours wall-clock |
+| Profile | `typical-real-world-mesh` |
+| Faults | jitter on edge-a; dark window on edge-b (start: 10m) |
+| Status | `completed` |
+| Harness verdict | `pass` |
+| Generated | 562,664 |
+| Duplicates injected/dropped | 1,762 / 1,762 |
+| Transport received | 564,426 |
+| Ordered | 562,664 |
+| Anomalies | 790 warning-level |
+| Duplicate leakage | 0 |
+| Peak node queue | 253 (edge-b) |
+| Peak RSS | 533.8 MB |
+| Final pending work | 0 |
+
+The published harness passed the run. All eight nodes remained represented, the workload completed 8 hours at `timeScale=1` under combined jitter and dark-window faults, every generated unique event was ordered despite transient failures, every injected duplicate was dropped, monitor routing remained normal, and the callback, ordering, lifecycle, monitor, and resource shutdown barriers completed with no pending work.
+
+The 790 anomalies are warning-level diagnostics across nodes, consistent with fault recovery behavior. The published jitter+dark-window scenario verdict does not classify these warnings as contract failures. The absence of corrections (0) confirms all anomalies resolved within the ordering pipeline and did not require corrections. Peak queue depth on edge-b (253) reflects buffering during the dark window and recovery. The run establishes the fault-handling baseline for comparison with later scenarios.
+
+Harness command:
+
+```bash
+causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --duration 8h --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --jitter-nodes edge-a --dark-nodes edge-b --dark-start-after 10m --run-name T02-jitter-dark-8n-8h
+```
+
+- [Documentation](docs/test-02-jitter-dark.md)
+- [Standard report](artifacts/runs/2026-07-24T17-07-12Z-t02-jitter-dark-8n-8h/standard-result.md)
+- [Raw harness summary](artifacts/runs/2026-07-24T17-07-12Z-t02-jitter-dark-8n-8h/summary.json)
+- [Anomaly evidence](artifacts/runs/2026-07-24T17-07-12Z-t02-jitter-dark-8n-8h/anomalies.ndjson)
+
 ## 2026-07-23 — SMOKE-04
 
 | Field | Result |

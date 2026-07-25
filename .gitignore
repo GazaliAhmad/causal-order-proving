@@ -3,3 +3,5 @@ node_modules/
 # High-volume run telemetry remains local; curated summaries and reports are tracked.
 artifacts/runs/**/monitor-health.ndjson
 artifacts/runs/**/monitor-replay.ndjson
+
+.local/
