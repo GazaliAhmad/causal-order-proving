@@ -1,3 +1,23 @@
+## T03: transport-outage
+
+**Verdict**: `PASS` ✅
+
+| Metric | Value |
+|--------|-------|
+| **Events generated** | 564,232 |
+| **Anomalies** | 733 |
+| **Leakage** | 0 |
+| **Pending work** | 0 |
+
+The transport-outage scenario tested recovery behavior. All 733 transient reorderings were detected and resolved without data loss or ordering violations, confirming fault tolerance.
+
+**Command**: `npm run t03`  
+**Documentation**: [docs/test-03-transport-outage.md](docs/test-03-transport-outage.md)  
+**Results**: [standard-result.md](artifacts/runs/2026-07-25T03-45-15Z-t03-transport-outage-8n-8h/standard-result.md)  
+**Evidence**: [standard-result.json](artifacts/runs/2026-07-25T03-45-15Z-t03-transport-outage-8n-8h/standard-result.json)
+
+---
+
 ## T02: jitter-dark
 
 **Verdict**: `PASS` ✅
