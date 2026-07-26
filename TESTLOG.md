@@ -1,3 +1,23 @@
+## T05: order-outage
+
+**Verdict**: `PASS` ✅
+
+| Metric | Value |
+|--------|-------|
+| **Events generated** | 563,943 |
+| **Anomalies** | 787 |
+| **Leakage** | 0 |
+| **Pending work** | 0 |
+
+The order-outage scenario tested recovery behavior. All 787 transient reorderings were detected and resolved without data loss or ordering violations, confirming fault tolerance.
+
+**Command**: `npm run t05`  
+**Documentation**: [docs/test-05-order-outage.md](docs/test-05-order-outage.md)  
+**Results**: [standard-result.md](artifacts/runs/2026-07-26T01-34-49Z-t05-order-outage-8n-8h/standard-result.md)  
+**Evidence**: [standard-result.json](artifacts/runs/2026-07-26T01-34-49Z-t05-order-outage-8n-8h/standard-result.json)
+
+---
+
 ## T04: dedupe-outage
 
 **Verdict**: `PASS_WITH_EXPECTED_DEGRADATION` ✅
