@@ -1,3 +1,23 @@
+## T04: dedupe-outage
+
+**Verdict**: `PASS_WITH_EXPECTED_DEGRADATION` ✅
+
+| Metric | Value |
+|--------|-------|
+| **Events generated** | 564,210 |
+| **Anomalies** | 843 |
+| **Leakage** | 0 |
+| **Pending work** | 0 |
+
+The dedupe-outage scenario tested recovery behavior. All 843 transient reorderings were detected and resolved without data loss or ordering violations, confirming fault tolerance.
+
+**Command**: `npm run t04`  
+**Documentation**: [docs/test-04-dedupe-outage.md](docs/test-04-dedupe-outage.md)  
+**Results**: [standard-result.md](artifacts/runs/2026-07-25T15-04-17Z-t04-dedupe-outage-8n-8h/standard-result.md)  
+**Evidence**: [standard-result.json](artifacts/runs/2026-07-25T15-04-17Z-t04-dedupe-outage-8n-8h/standard-result.json)
+
+---
+
 ## T03: transport-outage
 
 **Verdict**: `PASS` ✅
