@@ -1,3 +1,23 @@
+## T06: nodes-transport
+
+**Verdict**: `PASS` ✅
+
+| Metric | Value |
+|--------|-------|
+| **Events generated** | 563,478 |
+| **Anomalies** | 745 |
+| **Leakage** | 0 |
+| **Pending work** | 0 |
+
+The nodes-transport scenario tested recovery behavior. All 745 transient reorderings were detected and resolved without data loss or ordering violations, confirming fault tolerance.
+
+**Command**: `npm run t06`  
+**Documentation**: [docs/test-06-nodes-transport.md](docs/test-06-nodes-transport.md)  
+**Results**: [standard-result.md](artifacts/runs/2026-07-26T13-59-03Z-t06-nodes-transport-8n-8h/standard-result.md)  
+**Evidence**: [standard-result.json](artifacts/runs/2026-07-26T13-59-03Z-t06-nodes-transport-8n-8h/standard-result.json)
+
+---
+
 ## T05: order-outage
 
 **Verdict**: `PASS` ✅
@@ -81,6 +101,37 @@ The jitter-dark scenario tested recovery behavior. All 790 transient reorderings
 # Test log
 
 Chronological record of executed causal-order stack tests. This repository uses a test log rather than a software changelog.
+
+## 2026-07-26 — SMOKE-05
+
+| Field | Result |
+| --- | --- |
+| Test | Clean eight-node smoke test |
+| Duration | 10 minutes wall-clock |
+| Profile | `typical-real-world-mesh` |
+| Faults | None |
+| Status | `completed` |
+| Verdict | `pass` |
+| Generated | 10,073 |
+| Duplicates injected/dropped | 11 / 11 |
+| Transport received | 10,084 |
+| Ordered | 10,073 |
+| Anomalies | 0 |
+| Duplicate leakage | 0 |
+| Peak node queue | 9 |
+| Peak RSS | 115.1 MB |
+| Final pending work | 0 |
+
+All standardized accounting, final-state, shutdown, and verdict checks passed. All eight nodes completed at `timeScale=1`; monitor routing remained normal, no work was buffered or replayed, and the monitor, ordering, callback, lifecycle, and resource shutdown barriers all drained cleanly.
+
+Harness command:
+
+```bash
+causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --duration 10m --steady-for 10m --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --run-name smoke-clean-8n-10m
+```
+
+- [Standard report](artifacts/runs/2026-07-26T13-21-14Z-smoke-clean-8n-10m/standard-result.md)
+- [Raw harness summary](artifacts/runs/2026-07-26T13-21-14Z-smoke-clean-8n-10m/summary.json)
 
 ## 2026-07-24 — T02
 
