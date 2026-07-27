@@ -1,3 +1,23 @@
+## T08: nodes-order
+
+**Verdict**: `PASS` ✅
+
+| Metric | Value |
+|--------|-------|
+| **Events generated** | 562,609 |
+| **Anomalies** | 751 |
+| **Leakage** | 0 |
+| **Pending work** | 0 |
+
+The nodes-order scenario tested recovery behavior. All 751 transient reorderings were detected and resolved without data loss or ordering violations, confirming fault tolerance.
+
+**Command**: `npm run t08`  
+**Documentation**: [docs/test-08-nodes-order.md](docs/test-08-nodes-order.md)  
+**Results**: [standard-result.md](artifacts/runs/2026-07-27T14-19-28Z-t08-nodes-order-8n-8h/standard-result.md)  
+**Evidence**: [standard-result.json](artifacts/runs/2026-07-27T14-19-28Z-t08-nodes-order-8n-8h/standard-result.json)
+
+---
+
 ## T07: nodes-dedupe
 
 **Verdict**: `PASS_WITH_EXPECTED_DEGRADATION` ✅
