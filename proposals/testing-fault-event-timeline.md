@@ -57,7 +57,32 @@ Add an optional, versioned fault timeline section to `summary.json`:
         "affectedNodes": ["string"],
         "recoveryStartedMs": "number or null",
         "recoveryCompletedMs": "number or null",
-        "recoveryDurationMs": "number or null"
+        "recoveryDurationMs": "number or null",
+        "degradation": {
+          "schema": "causal-order-testing/dedupe-degradation",
+          "version": 1,
+          "dedupeUnhealthyDetectedMs": "number or null",
+          "dedupeHealthyObservedMs": "number or null",
+          "normalDedupeRoutingResumedMs": "number or null",
+          "routingIntervals": [
+            {
+              "route": "normal_dedupe | permitted_bypass | buffered | rejected",
+              "startMs": "number",
+              "endMs": "number",
+              "reason": "string"
+            }
+          ],
+          "traffic": {
+            "accepted": "number",
+            "normalDedupeRouted": "number",
+            "permittedBypassRouted": "number",
+            "buffered": "number",
+            "rejected": "number"
+          },
+          "dedupeDecisionsByReason": {},
+          "duplicateLeakage": "number or null",
+          "replayCompletedMs": "number or null"
+        }
       }
     ]
   }
@@ -80,6 +105,13 @@ The `observed` section must distinguish:
 - when the system began recovering (if observable);
 - when recovery completed or stabilized.
 
+For `dedupe_outage` faults, the optional `degradation` object records the
+observable effect on accepted traffic. `recoveryCompletedMs` must not be set
+solely because the dependency became healthy: normal dedupe routing must have
+resumed and any affected buffered or bypassed work must be reconciled. The
+object is absent when the harness cannot observe the required routing or
+decision evidence; it must not be populated from inferred internal state.
+
 ## Collection rules
 
 - Use monotonic elapsed time (same clock as other timing fields).
@@ -90,6 +122,19 @@ The `observed` section must distinguish:
 - Record recovery boundaries only if they are observable and distinct from fault end.
 - Preserve partial fault timeline if a run is interrupted or fails.
 - Record the wall-clock timestamp when each fault event was observed (ISO format).
+- For `dedupe_outage`, record the time dedupe unhealthy was detected, the time
+  healthy status was observed again, and the time normal dedupe routing
+  resumed; do not treat these as interchangeable milestones.
+- For each dedupe routing interval, count accepted traffic by outcome:
+  normal-dedupe routed, permitted bypass, buffered, or rejected. The interval
+  totals must reconcile with the fault event's accepted-traffic total.
+- Attribute dedupe decisions and duplicate leakage by the harness-observed
+  reason. Do not report a zero duplicate-leakage value when that metric was
+  unavailable; emit `null` and list it as unavailable instead.
+- Record a permitted bypass only when the active scenario explicitly allows
+  one. Record its reason and exact start/end boundaries.
+- Record replay completion separately from dependency health restoration and
+  normal-route resumption.
 
 ## Verdict policy
 
@@ -119,6 +164,12 @@ If implementation changes an existing verdict or removes or redefines an artifac
 - Observed fault boundaries remain distinct from requested parameters.
 - Every fault event includes affected component and node list.
 - Recovery milestones (if observable) are distinct from fault end time.
+- Dedupe-outage runs distinguish unhealthy detection, dependency health
+  restoration, normal-route resumption, and replay completion.
+- Dedupe-outage traffic reconciles accepted events across normal routing,
+  permitted bypass, buffering, and rejection; unavailable metrics are explicit.
+- Dedupe-outage runs expose duplicate leakage and decision reasons without
+  inferring values from package internals.
 - Summary and comparison commands render the new fault timeline.
 - Package documentation explains collection and interpretation.
 - Packed-package validation proves the feature using only published surfaces.

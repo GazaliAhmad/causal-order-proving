@@ -16,6 +16,12 @@ The current harness provides strong correctness, routing, recovery, drain, and r
 
 These metrics are not required for correctness qualification. They are needed for a defensible performance and soak baseline.
 
+For fault runs, whole-run percentiles can conceal a brief but consequential
+degraded route. In particular, a dedupe outage may preserve correctness while
+changing latency, backlog growth, or the route taken by accepted work. The
+harness must therefore make fault-phase performance separable from healthy
+operation when it has observed the relevant fault and routing boundaries.
+
 ## Constraints
 
 - Implement the feature inside `@causal-order/testing`.
@@ -101,6 +107,28 @@ Report:
 
 Monitor pending rows, ordering lag, and transport in-flight work must remain separate measures.
 
+### Fault-phase and dedupe-route segmentation
+
+For a run with observed fault events, report performance distributions and
+traffic counts separately for each observed fault phase rather than relying
+only on whole-run values. For `dedupe_outage`, partition accepted events by
+the observed route:
+
+- normal dedupe routing;
+- permitted bypass;
+- buffering pending dedupe recovery; and
+- rejection.
+
+For every available phase/route partition, report event count,
+generation-to-order and receipt-to-order latency distributions, unresolved
+terminal-order observations, and peak ordering lag. Identify the associated
+fault ID and use the actual observed boundaries from the fault timeline; do
+not derive a phase from requested fault parameters.
+
+Partitions are supplemental: aggregate distributions remain the primary
+whole-run result. A missing routing observation must be represented as
+unavailable, not classified as normal routing.
+
 ### Existing resource metrics
 
 Retain the existing RSS and heap measurements and standardize:
@@ -129,6 +157,8 @@ Each record should include:
 - transport in-flight work;
 - monitor pending work;
 - ordering lag; and
+- active observed fault IDs and phase;
+- observed dedupe route, when available; and
 - cumulative latency distribution counts.
 
 Add an optional, versioned performance section to `summary.json`:
@@ -184,6 +214,31 @@ Add an optional, versioned performance section to `summary.json`:
       "finalWatermarkMs": null,
       "peakWatermarkMs": null
     },
+    "faultPhaseBreakdown": [
+      {
+        "faultId": "string",
+        "phase": "pre_fault | active_fault | recovery | post_recovery",
+        "dedupeRoute": "normal_dedupe | permitted_bypass | buffered | rejected | null",
+        "eventCount": 0,
+        "generationToOrderLatencyMs": {
+          "count": 0,
+          "p50": null,
+          "p95": null,
+          "p99": null,
+          "max": null,
+          "unresolved": 0
+        },
+        "receiptToOrderLatencyMs": {
+          "count": 0,
+          "p50": null,
+          "p95": null,
+          "p99": null,
+          "max": null,
+          "unresolved": 0
+        },
+        "peakOrderingLagEvents": null
+      }
+    ],
     "memory": {
       "initialRssBytes": null,
       "finalRssBytes": null,
@@ -208,6 +263,14 @@ Exact field names remain the owning package's decision. The important contract i
 - Use `null`, not zero, when a metric is unavailable.
 - Preserve partial performance evidence when a run fails or is interrupted.
 - Capture final metrics only after the harness's existing drain barriers.
+- Derive fault phases only from observed fault-timeline boundaries. If those
+  boundaries are unavailable, retain aggregate performance metrics and mark
+  phase segmentation unavailable.
+- For `dedupe_outage`, assign an event to a route only when the harness
+  observed that route. Do not infer normal routing from the absence of bypass
+  evidence.
+- Keep permitted-bypass, buffered, rejected, and normal-dedupe samples
+  separate; never merge their latency distributions.
 
 ## Verdict policy
 
@@ -235,6 +298,12 @@ If implementation changes an existing verdict or removes or redefines an artifac
 - Wall-clock adapter runs emit the new time-series and summary evidence.
 - Every distribution includes units, sample count, and population definition.
 - Runtime metrics remain distinct from shutdown behavior.
+- Fault runs with observed timeline boundaries render aggregate and
+  fault-phase performance separately.
+- Dedupe-outage runs with observed routing evidence render separate
+  performance and ordering-lag populations for each route.
+- Missing fault-phase or dedupe-route observations are explicit and are never
+  represented as healthy normal-routing samples.
 - Interrupted and failed runs retain partial measurements.
 - Summary and comparison commands render the new metrics.
 - Package documentation explains collection and interpretation.
@@ -248,3 +317,4 @@ If implementation changes an existing verdict or removes or redefines an artifac
 - Defining universal pass/fail performance thresholds.
 - Reinterpreting correctness failures as performance failures.
 - Implementing missing harness behavior inside this proving repository.
+- Inferring fault phases or dedupe routes from absent observations.
