@@ -1,0 +1,453 @@
+{
+  "schema": "causal-order-proving/result",
+  "schemaVersion": 1,
+  "identity": {
+    "testId": "T09",
+    "runName": "T09-transport-dedupe-8n-8h",
+    "runDir": "C:\\dev\\causal-order-proving\\artifacts\\runs\\2026-07-28T01-23-16Z-t09-transport-dedupe-8n-8h",
+    "summaryPath": "C:\\dev\\causal-order-proving\\artifacts\\runs\\2026-07-28T01-23-16Z-t09-transport-dedupe-8n-8h\\summary.json",
+    "standardizedAt": "2026-07-28T10:43:02.212Z",
+    "gitCommit": "485c8795da96ad49305f39d9256cbdbce358497a",
+    "packageVersions": {
+      "causal-order": "1.0.1",
+      "@causal-order/transport": "0.2.0",
+      "@causal-order/monitor": "0.6.0",
+      "@causal-order/dedupe": "1.2.0",
+      "@causal-order/testing": "0.3.1"
+    }
+  },
+  "environment": {
+    "nodeVersion": "v24.15.0",
+    "platform": "win32",
+    "architecture": "x64"
+  },
+  "configuration": {
+    "durationMs": 28800000,
+    "steadyForMs": 8640000,
+    "timeScale": 1,
+    "profileName": "typical-real-world-mesh",
+    "adapterModule": "@causal-order/transport/testing",
+    "monitorEnabled": true,
+    "monitorScenario": "monitor-dual-outage",
+    "nodeIds": [
+      "edge-a",
+      "edge-b",
+      "edge-c",
+      "edge-d",
+      "edge-e",
+      "edge-f",
+      "edge-g",
+      "edge-h"
+    ],
+    "eventsPerSecond": 14,
+    "dedupeWindowSeconds": 180
+  },
+  "timing": {
+    "startedAt": "2026-07-28T01:23:16.825Z",
+    "finishedAt": "2026-07-28T09:23:18.243Z",
+    "wallElapsedMs": 28801418,
+    "simulatedElapsedMs": 28801418,
+    "clockDriftMs": 0,
+    "interrupted": false
+  },
+  "traffic": {
+    "generated": 563332,
+    "duplicatesInjected": 1735,
+    "sent": 565067,
+    "received": 565067,
+    "dedupeAccepted": 563332,
+    "dedupeDropped": 1735,
+    "ordered": 563332,
+    "receivedPerSecond": 19.619,
+    "duplicateRatePercent": 0.307,
+    "generatedToSentDelta": 0,
+    "sentToReceivedDelta": 0,
+    "receivedToDedupeDelta": 0,
+    "acceptedToOrderedDelta": 0
+  },
+  "nodes": [
+    {
+      "nodeId": "edge-a",
+      "generated": 80971,
+      "sent": 81214,
+      "received": 81214,
+      "duplicatesInjected": 243,
+      "sameNodeDependencies": 17524,
+      "crossNodeDependencies": 35683,
+      "maxPendingQueueDepth": 256,
+      "darkWindowsEntered": 0,
+      "reconnects": 0,
+      "jitterExtraDelaysApplied": 0,
+      "jitterSpikeDelaysApplied": 0
+    },
+    {
+      "nodeId": "edge-b",
+      "generated": 73234,
+      "sent": 73480,
+      "received": 73480,
+      "duplicatesInjected": 246,
+      "sameNodeDependencies": 15797,
+      "crossNodeDependencies": 32524,
+      "maxPendingQueueDepth": 256,
+      "darkWindowsEntered": 0,
+      "reconnects": 0,
+      "jitterExtraDelaysApplied": 0,
+      "jitterSpikeDelaysApplied": 0
+    },
+    {
+      "nodeId": "edge-c",
+      "generated": 66308,
+      "sent": 66518,
+      "received": 66518,
+      "duplicatesInjected": 210,
+      "sameNodeDependencies": 14234,
+      "crossNodeDependencies": 29658,
+      "maxPendingQueueDepth": 255,
+      "darkWindowsEntered": 0,
+      "reconnects": 0,
+      "jitterExtraDelaysApplied": 0,
+      "jitterSpikeDelaysApplied": 0
+    },
+    {
+      "nodeId": "edge-d",
+      "generated": 68564,
+      "sent": 68780,
+      "received": 68780,
+      "duplicatesInjected": 216,
+      "sameNodeDependencies": 14863,
+      "crossNodeDependencies": 30527,
+      "maxPendingQueueDepth": 251,
+      "darkWindowsEntered": 0,
+      "reconnects": 0,
+      "jitterExtraDelaysApplied": 0,
+      "jitterSpikeDelaysApplied": 0
+    },
+    {
+      "nodeId": "edge-e",
+      "generated": 68840,
+      "sent": 69047,
+      "received": 69047,
+      "duplicatesInjected": 207,
+      "sameNodeDependencies": 14795,
+      "crossNodeDependencies": 30584,
+      "maxPendingQueueDepth": 249,
+      "darkWindowsEntered": 0,
+      "reconnects": 0,
+      "jitterExtraDelaysApplied": 0,
+      "jitterSpikeDelaysApplied": 0
+    },
+    {
+      "nodeId": "edge-f",
+      "generated": 68441,
+      "sent": 68648,
+      "received": 68648,
+      "duplicatesInjected": 207,
+      "sameNodeDependencies": 14745,
+      "crossNodeDependencies": 30415,
+      "maxPendingQueueDepth": 249,
+      "darkWindowsEntered": 0,
+      "reconnects": 0,
+      "jitterExtraDelaysApplied": 0,
+      "jitterSpikeDelaysApplied": 0
+    },
+    {
+      "nodeId": "edge-g",
+      "generated": 68604,
+      "sent": 68815,
+      "received": 68815,
+      "duplicatesInjected": 211,
+      "sameNodeDependencies": 14721,
+      "crossNodeDependencies": 30565,
+      "maxPendingQueueDepth": 254,
+      "darkWindowsEntered": 0,
+      "reconnects": 0,
+      "jitterExtraDelaysApplied": 0,
+      "jitterSpikeDelaysApplied": 0
+    },
+    {
+      "nodeId": "edge-h",
+      "generated": 68370,
+      "sent": 68565,
+      "received": 68565,
+      "duplicatesInjected": 195,
+      "sameNodeDependencies": 14521,
+      "crossNodeDependencies": 30440,
+      "maxPendingQueueDepth": 252,
+      "darkWindowsEntered": 0,
+      "reconnects": 0,
+      "jitterExtraDelaysApplied": 0,
+      "jitterSpikeDelaysApplied": 0
+    }
+  ],
+  "transport": {
+    "errors": 0,
+    "persistedLateArrivals": 0,
+    "peerStatesByStatus": {
+      "connected": 8,
+      "disconnected": 8
+    },
+    "faultEventsByType": {},
+    "callbackBoundary": "closed"
+  },
+  "monitor": {
+    "enabled": true,
+    "scenarioId": "monitor-dual-outage",
+    "routingModes": {
+      "normal": 549591,
+      "full_outage_buffer": 14888,
+      "replay_through_dedupe": 588
+    },
+    "deliveryModes": {
+      "normal": 549591,
+      "full_outage_buffer": 14888,
+      "replay_through_dedupe": 588
+    },
+    "bufferedEvents": 15476,
+    "forwardedToDedupe": 565067,
+    "replayDeliveriesToDedupe": 15476,
+    "forwardedToOrder": 0,
+    "finalPendingRows": 0,
+    "oldestPendingAgeMs": 0,
+    "replayState": "idle",
+    "maxPendingOperations": 57,
+    "runtimeFinalComponentStates": {
+      "transport": {
+        "component": "transport",
+        "state": "online",
+        "observedAt": "1785230574264",
+        "lastChangedAt": "1785201796866",
+        "reasonCode": "heartbeat",
+        "details": {
+          "eventId": "edge-h-000000068309",
+          "nodeId": "edge-h"
+        }
+      },
+      "dedupe": {
+        "component": "dedupe",
+        "state": "online",
+        "observedAt": "1785230574264",
+        "lastChangedAt": "1785211276849",
+        "reasonCode": "heartbeat",
+        "details": {
+          "scenarioId": "monitor-dual-outage",
+          "scenarioLabel": "healthy_or_recovery",
+          "elapsedMs": "28777439"
+        }
+      },
+      "causal-order": {
+        "component": "causal-order",
+        "state": "online",
+        "observedAt": "1785230574265",
+        "lastChangedAt": "1785211276875",
+        "reasonCode": "heartbeat",
+        "details": {
+          "scenarioId": "monitor-dual-outage",
+          "scenarioLabel": "healthy_or_recovery",
+          "elapsedMs": "28777439"
+        }
+      }
+    },
+    "shutdownFinalComponentStates": {
+      "transport": {
+        "component": "transport",
+        "state": "offline",
+        "observedAt": "1785230598221",
+        "lastChangedAt": "1785230598207",
+        "reasonCode": null,
+        "details": {
+          "peerId": "peer-e7f0f115-9de2-4357-a317-1ba398d48318",
+          "connectionId": "e7f0f115-9de2-4357-a317-1ba398d48318",
+          "detail": null
+        }
+      },
+      "dedupe": {
+        "component": "dedupe",
+        "state": "online",
+        "observedAt": "1785230598160",
+        "lastChangedAt": "1785211276849",
+        "reasonCode": "heartbeat",
+        "details": {
+          "scenarioId": "monitor-dual-outage",
+          "scenarioLabel": "healthy_or_recovery",
+          "elapsedMs": "28801335"
+        }
+      },
+      "causal-order": {
+        "component": "causal-order",
+        "state": "online",
+        "observedAt": "1785230598161",
+        "lastChangedAt": "1785211276875",
+        "reasonCode": "heartbeat",
+        "details": {
+          "scenarioId": "monitor-dual-outage",
+          "scenarioLabel": "healthy_or_recovery",
+          "elapsedMs": "28801335"
+        }
+      }
+    },
+    "endedDrained": true,
+    "lifecycleDroppedTotal": 0,
+    "admissionRefusedTotal": 0
+  },
+  "dedupe": {
+    "acceptedEvents": 563332,
+    "droppedDuplicates": 1735,
+    "currentCacheSize": 4198,
+    "peakCacheSize": 18376,
+    "activeWindowSeconds": 180,
+    "decisionsByReason": {
+      "accepted": 563332,
+      "duplicate": 1735
+    },
+    "identitySources": {
+      "id": 565067
+    }
+  },
+  "ordering": {
+    "orderedEvents": 563332,
+    "anomalies": 784,
+    "anomaliesByType": {
+      "sequence_regression": 784
+    },
+    "anomaliesBySeverity": {
+      "warning": 784
+    },
+    "orderBasis": {
+      "sequence": 562342,
+      "causal": 990
+    },
+    "confidence": {
+      "derived": 495051,
+      "proven": 68281
+    },
+    "correctionBatches": 0,
+    "batches": 240579,
+    "finalBatches": 1,
+    "lastWatermarkMs": "1785230536728"
+  },
+  "resources": {
+    "peakRssBytes": 926691328,
+    "peakRssMb": 883.8,
+    "peakHeapUsedBytes": 70068752,
+    "peakHeapUsedMb": 66.8
+  },
+  "performance": {
+    "receivedPerSecond": 19.619,
+    "transportAcknowledgmentLatencyMs": null,
+    "endToEndLatencyMs": null,
+    "orderingLagMs": null,
+    "cpuUtilizationPercent": null,
+    "eventLoopLagMs": null,
+    "unavailableMetrics": [
+      "transportAcknowledgmentLatencyMs",
+      "endToEndLatencyMs",
+      "orderingLagMs",
+      "cpuUtilizationPercent",
+      "eventLoopLagMs"
+    ]
+  },
+  "shutdown": {
+    "phase": "resources_closed",
+    "completedPhases": [
+      "running",
+      "ingress_stopping",
+      "ingress_stopped",
+      "transport_stopping",
+      "transport_stopped",
+      "monitor_operations_draining",
+      "monitor_recovering",
+      "monitor_drained",
+      "lifecycle_draining",
+      "order_draining",
+      "evidence_finalizing"
+    ],
+    "milestones": [
+      "ingress_stopped",
+      "adapter_stop_started",
+      "adapter_stop_resolved",
+      "monitor_operations_drained",
+      "monitor_terminal",
+      "lifecycle_drained",
+      "event_queue_closed",
+      "ordering_settled",
+      "verdict_derived"
+    ],
+    "transportCallbackBoundary": "closed",
+    "orderingSettled": true,
+    "resourcesClosed": true,
+    "pendingScheduledSends": 0,
+    "pendingMonitorOperations": 0,
+    "errors": []
+  },
+  "result": {
+    "status": "completed",
+    "verdict": "pass",
+    "verdictReasons": [],
+    "failure": null
+  },
+  "checks": [
+    {
+      "id": "ACC-01",
+      "label": "generated + duplicates = sent",
+      "status": "pass",
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "id": "ACC-02",
+      "label": "sent = transport received",
+      "status": "pass",
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "id": "ACC-03",
+      "label": "received = accepted + dropped",
+      "status": "pass",
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "id": "ACC-04",
+      "label": "dedupe accepted = ordered",
+      "status": "pass",
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "id": "FIN-01",
+      "label": "monitor pending rows",
+      "status": "pass",
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "id": "FIN-02",
+      "label": "monitor pending operations",
+      "status": "pass",
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "id": "FIN-03",
+      "label": "transport callback boundary",
+      "status": "pass",
+      "actual": "closed",
+      "expected": "closed"
+    },
+    {
+      "id": "FIN-04",
+      "label": "resources closed",
+      "status": "pass",
+      "actual": true,
+      "expected": true
+    },
+    {
+      "id": "OUT-01",
+      "label": "harness verdict",
+      "status": "pass",
+      "actual": "pass",
+      "expected": "pass or pass_with_expected_degradation"
+    }
+  ]
+}
