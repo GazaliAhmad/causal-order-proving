@@ -1,3 +1,23 @@
+## T09: transport-dedupe
+
+**Verdict**: `PASS` ✅
+
+| Metric | Value |
+|--------|-------|
+| **Events generated** | 563,332 |
+| **Anomalies** | 784 |
+| **Leakage** | 0 |
+| **Pending work** | 0 |
+
+The transport-dedupe scenario tested recovery behavior. All 784 transient reorderings were detected and resolved without data loss or ordering violations, confirming fault tolerance.
+
+**Command**: `npm run t09`  
+**Documentation**: [docs/test-09-transport-dedupe.md](docs/test-09-transport-dedupe.md)  
+**Results**: [standard-result.md](artifacts/runs/2026-07-28T01-23-16Z-t09-transport-dedupe-8n-8h/standard-result.md)  
+**Evidence**: [standard-result.json](artifacts/runs/2026-07-28T01-23-16Z-t09-transport-dedupe-8n-8h/standard-result.json)
+
+---
+
 ## T08: nodes-order
 
 **Verdict**: `PASS` ✅
