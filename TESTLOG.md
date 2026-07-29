@@ -1,3 +1,23 @@
+## T10: transport-order
+
+**Verdict**: `PASS` ✅
+
+| Metric | Value |
+|--------|-------|
+| **Events generated** | 564,250 |
+| **Anomalies** | 755 |
+| **Leakage** | 0 |
+| **Pending work** | 0 |
+
+The transport-order scenario tested recovery behavior. All 755 transient reorderings were detected and resolved without data loss or ordering violations, confirming fault tolerance.
+
+**Command**: `npm run t10`  
+**Documentation**: [docs/test-10-transport-order.md](docs/test-10-transport-order.md)  
+**Results**: [standard-result.md](artifacts/runs/2026-07-28T14-28-28Z-t10-transport-order-8n-8h/standard-result.md)  
+**Evidence**: [standard-result.json](artifacts/runs/2026-07-28T14-28-28Z-t10-transport-order-8n-8h/standard-result.json)
+
+---
+
 ## T09: transport-dedupe
 
 **Verdict**: `PASS` ✅
