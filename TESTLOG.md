@@ -1,3 +1,23 @@
+## T11: dedupe-order
+
+**Verdict**: `PASS` ✅
+
+| Metric | Value |
+|--------|-------|
+| **Events generated** | 562,537 |
+| **Anomalies** | 779 |
+| **Leakage** | 0 |
+| **Pending work** | 0 |
+
+The dedupe-order scenario tested recovery behavior. All 779 transient reorderings were detected and resolved without data loss or ordering violations, confirming fault tolerance.
+
+**Command**: `npm run t11`  
+**Documentation**: [docs/test-11-dedupe-order.md](docs/test-11-dedupe-order.md)  
+**Results**: [standard-result.md](artifacts/runs/2026-07-29T01-40-57Z-t11-dedupe-order-8n-8h/standard-result.md)  
+**Evidence**: [standard-result.json](artifacts/runs/2026-07-29T01-40-57Z-t11-dedupe-order-8n-8h/standard-result.json)
+
+---
+
 ## T10: transport-order
 
 **Verdict**: `PASS` ✅
