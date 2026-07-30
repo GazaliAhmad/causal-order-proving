@@ -214,25 +214,24 @@ No transport disconnection occurred during the active test window. The recorded 
 
 ## T02: jitter-dark
 
-**Evidence status**: `INVALID_FOR_INTENDED_SCENARIO` ⚠️
-
-**Recorded harness verdict**: `PASS` for the normal-node workload only
+**Verdict**: `PASS` ✅
 
 | Metric | Value |
-|--------|-------|
-| **Events generated** | 562,664 |
-| **Anomalies** | 790 |
+| --- | --- |
+| **Events generated** | 551,416 |
+| **Anomalies** | 1129 |
 | **Leakage** | 0 |
 | **Pending work** | 0 |
 
-The configured jitter and dark-node lists were present, but the recorded jitter-delay, dark-window, and reconnect counters were all zero. The run therefore does not prove the intended T02 jitter-dark claim. The original artifacts are retained as retracted evidence.
+The recorded scenario matched the T02 evidence contract. Every required fault was observed, all standardized checks passed, and the stack drained cleanly.
 
 **Command**: `npm run t02`  
 **Documentation**: [docs/test-02-jitter-dark.md](docs/test-02-jitter-dark.md)  
-**Results**: [standard-result.md](artifacts/runs/2026-07-24T17-07-12Z-t02-jitter-dark-8n-8h/standard-result.md)  
-**Evidence**: [standard-result.json](artifacts/runs/2026-07-24T17-07-12Z-t02-jitter-dark-8n-8h/standard-result.json)
+**Results**: [standard-result.md](artifacts/runs/2026-07-30T13-01-39Z-t02-jitter-dark-8n-8h/standard-result.md)  
+**Evidence**: [standard-result.json](artifacts/runs/2026-07-30T13-01-39Z-t02-jitter-dark-8n-8h/standard-result.json)
 
 ---
+
 
 # Test log
 
