@@ -104,6 +104,7 @@ if (!match) {
 
 const testNum = match[1];
 const scenario = match[2].toLowerCase();
+const runDate = testRunPath.slice(0, 10);
 const testId = `test-${testNum}`;
 const contract = TEST_CONTRACTS[testNum];
 if (!contract) {
@@ -169,8 +170,24 @@ const anomalies = Number(result.ordering.anomalies);
 const formattedEvents = eventsGenerated.toLocaleString("en-US");
 const docPath = path.join("docs", `${testId}-${scenario}.md`);
 
-console.log("\n3. Writing test documentation...");
-const docContent = `# TEST-${testNum}: ${scenario}
+console.log("\n3. Updating test documentation...");
+const runHeading = `## Run ${testRunPath}`;
+const runContent = `${runHeading}
+
+Result folder: \`artifacts/runs/${testRunPath}\`
+
+- **Verdict**: \`${verdict}\`
+- **Events generated**: ${formattedEvents}
+- **Anomalies detected and resolved**: ${anomalies}
+- **Data loss**: 0
+- **Pending work**: 0
+- **Monitor scenario**: \`${contract.monitorScenario ?? "none"}\`
+
+[Detailed metrics](../artifacts/runs/${testRunPath}/standard-result.md)
+
+This run satisfies the T${testNum} ${scenario} evidence contract.
+`;
+const initialDocContent = `# TEST-${testNum}: ${scenario}
 
 ## Objective
 
@@ -189,35 +206,26 @@ Verify the causal-order stack's fault tolerance through the T${testNum} ${scenar
 npm run t${testNum}
 \`\`\`
 
-Result folder: \`artifacts/runs/${testRunPath}\`
-
 ## Evidence
-
-- **Verdict**: \`${verdict}\`
-- **Events generated**: ${formattedEvents}
-- **Anomalies detected and resolved**: ${anomalies}
-- **Data loss**: 0
-- **Pending work**: 0
-- **Monitor scenario**: \`${contract.monitorScenario ?? "none"}\`
-
-[Detailed metrics](../artifacts/runs/${testRunPath}/standard-result.md)
-
-## Proof Criteria
-
-- All standardized accounting and ordering checks passed
-- The configured scenario matches the T${testNum} evidence contract
-- Every required fault was observed
-- The stack drained with zero pending work and zero leakage
-
-This run satisfies the T${testNum} ${scenario} evidence contract.
 `;
-fs.writeFileSync(docPath, docContent);
-console.log(`   Wrote ${docPath}`);
+const existingDocContent = fs.existsSync(docPath)
+  ? fs.readFileSync(docPath, "utf8")
+  : initialDocContent;
+if (existingDocContent.includes(runHeading)) {
+  console.log(`   ${docPath} already contains ${testRunPath}`);
+} else {
+  fs.writeFileSync(
+    docPath,
+    `${existingDocContent.trimEnd()}\n\n${runContent}`,
+  );
+  console.log(`   Appended ${testRunPath} to ${docPath}`);
+}
 
 console.log("\n4. Updating TESTLOG.md...");
 const testlogPath = "TESTLOG.md";
 const testlogContent = fs.readFileSync(testlogPath, "utf8");
-const newEntry = `## T${testNum}: ${scenario}
+const newEntryHeading = `## T${testNum}: ${scenario} — ${testRunPath}`;
+const newEntry = `${newEntryHeading}
 
 **Verdict**: \`${verdict}\` ✅
 
@@ -238,15 +246,12 @@ The recorded scenario matched the T${testNum} evidence contract. Every required 
 ---
 
 `;
-const sectionPattern = new RegExp(
-  `^## T${testNum}: [\\s\\S]*?^---\\r?\\n?`,
-  "m",
-);
-const updatedTestlog = sectionPattern.test(testlogContent)
-  ? testlogContent.replace(sectionPattern, newEntry)
-  : newEntry + testlogContent;
-fs.writeFileSync(testlogPath, updatedTestlog);
-console.log(`   Replaced the T${testNum} entry`);
+if (testlogContent.includes(newEntryHeading)) {
+  console.log(`   TESTLOG.md already contains ${testRunPath}`);
+} else {
+  fs.writeFileSync(testlogPath, newEntry + testlogContent);
+  console.log(`   Added a new T${testNum} run entry`);
+}
 
 console.log("\n5. Creating telemetry archive...");
 const healthPath = path.join(fullPath, "monitor-health.ndjson");
@@ -291,6 +296,9 @@ if (hasStagedChanges()) {
 }
 
 const tagName = nextEvidenceTag(`evidence-t${testNum}`);
+const tagVersionMatch = tagName.match(/-v(\d+)$/);
+const runNumber = tagVersionMatch ? Number(tagVersionMatch[1]) : 1;
+const releaseTitle = `T${testNum} ${scenario} — Run ${runNumber} (${runDate}) evidence`;
 run("git", [
   "tag",
   "-a",
@@ -317,13 +325,17 @@ if (!noPush) {
   console.log("\n7. Push skipped (--no-push).");
 }
 
-const releaseBody = `## T${testNum} ${scenario} evidence
+const releaseBody = `## T${testNum} ${scenario} — Run ${runNumber}
 
-Raw monitor telemetry from the successful corrected eight-node, eight-hour fault-injection test of the causal-order stack.
+Raw monitor telemetry from the successful eight-node, eight-hour fault-injection run of the causal-order stack completed on ${runDate}.
 
-The test scenario: ${scenario}
+- **Evidence tag**: \`${tagName}\`
+- **Run folder**: \`${testRunPath}\`
+- **Scenario**: \`${scenario}\`
 
 The published \`@causal-order/testing\` APIs recorded a **${verdict}** verdict. All ${formattedEvents} unique events were ordered correctly, ${anomalies} anomalies were detected and resolved without data loss, and the stack drained cleanly.
+
+This release is a distinct T${testNum} run. Previous T${testNum} releases and their artifacts remain retained under their original evidence tags.
 
 [View the standardized result](https://github.com/GazaliAhmad/causal-order-proving/blob/main/artifacts/runs/${testRunPath}/standard-result.md)
 
@@ -334,7 +346,7 @@ SHA-256: \`${hash}\`
 `;
 
 console.log("\nFinalization complete.");
-console.log(`\nRelease title: T${testNum} corrected eight-node eight-hour ${scenario} evidence`);
+console.log(`\nRelease title: ${releaseTitle}`);
 console.log(`Tag: ${tagName}\n`);
 console.log(releaseBody);
 console.log(`Archive: ${zipPath}`);
