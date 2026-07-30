@@ -1,6 +1,8 @@
 ## T12: all-failures
 
-**Verdict**: `PASS` ✅
+**Evidence status**: `INVALID_FOR_INTENDED_SCENARIO` ⚠️
+
+**Recorded harness verdict**: `PASS` for the partial scenario only
 
 | Metric | Value |
 |--------|-------|
@@ -9,7 +11,7 @@
 | **Leakage** | 0 |
 | **Pending work** | 0 |
 
-The all-failures scenario tested recovery behavior. All 770 transient reorderings were detected and resolved without data loss or ordering violations, confirming fault tolerance.
+The run exercised node jitter/dark-window behavior plus dedupe and causal-order outages. It did not inject the required transport outage, so it does not prove the intended T12 all-failures claim. The original artifacts are retained as retracted evidence.
 
 **Command**: `npm run t12`  
 **Documentation**: [docs/test-12-all-failures.md](docs/test-12-all-failures.md)  
@@ -40,7 +42,9 @@ The dedupe-order scenario tested recovery behavior. All 779 transient reordering
 
 ## T10: transport-order
 
-**Verdict**: `PASS` ✅
+**Evidence status**: `INVALID_FOR_INTENDED_SCENARIO` ⚠️
+
+**Recorded harness verdict**: `PASS` for the actual scenario only
 
 | Metric | Value |
 |--------|-------|
@@ -49,7 +53,7 @@ The dedupe-order scenario tested recovery behavior. All 779 transient reordering
 | **Leakage** | 0 |
 | **Pending work** | 0 |
 
-The transport-order scenario tested recovery behavior. All 755 transient reorderings were detected and resolved without data loss or ordering violations, confirming fault tolerance.
+The run exercised dedupe and causal-order outages, not transport and causal-order outages. Transport remained online during the intended fault window, so the run does not prove the T10 claim. The original artifacts are retained as retracted evidence.
 
 **Command**: `npm run t10`  
 **Documentation**: [docs/test-10-transport-order.md](docs/test-10-transport-order.md)  
@@ -60,7 +64,9 @@ The transport-order scenario tested recovery behavior. All 755 transient reorder
 
 ## T09: transport-dedupe
 
-**Verdict**: `PASS` ✅
+**Evidence status**: `INVALID_FOR_INTENDED_SCENARIO` ⚠️
+
+**Recorded harness verdict**: `PASS` for the actual scenario only
 
 | Metric | Value |
 |--------|-------|
@@ -69,7 +75,7 @@ The transport-order scenario tested recovery behavior. All 755 transient reorder
 | **Leakage** | 0 |
 | **Pending work** | 0 |
 
-The transport-dedupe scenario tested recovery behavior. All 784 transient reorderings were detected and resolved without data loss or ordering violations, confirming fault tolerance.
+The run exercised dedupe and causal-order outages, not transport and dedupe outages. Transport remained online during the intended fault window, so the run does not prove the T09 claim. The original artifacts are retained as retracted evidence.
 
 **Command**: `npm run t09`  
 **Documentation**: [docs/test-09-transport-dedupe.md](docs/test-09-transport-dedupe.md)  
@@ -80,7 +86,9 @@ The transport-dedupe scenario tested recovery behavior. All 784 transient reorde
 
 ## T08: nodes-order
 
-**Verdict**: `PASS` ✅
+**Evidence status**: `INVALID_FOR_INTENDED_SCENARIO` ⚠️
+
+**Recorded harness verdict**: `PASS` for the causal-order-outage scenario only
 
 | Metric | Value |
 |--------|-------|
@@ -89,7 +97,7 @@ The transport-dedupe scenario tested recovery behavior. All 784 transient reorde
 | **Leakage** | 0 |
 | **Pending work** | 0 |
 
-The nodes-order scenario tested recovery behavior. All 751 transient reorderings were detected and resolved without data loss or ordering violations, confirming fault tolerance.
+The causal-order outage ran, but the configured node jitter and dark-window counters remained zero. The run therefore does not prove the intended T08 nodes-order claim. The original artifacts are retained as retracted evidence.
 
 **Command**: `npm run t08`  
 **Documentation**: [docs/test-08-nodes-order.md](docs/test-08-nodes-order.md)  
@@ -100,7 +108,9 @@ The nodes-order scenario tested recovery behavior. All 751 transient reorderings
 
 ## T07: nodes-dedupe
 
-**Verdict**: `PASS_WITH_EXPECTED_DEGRADATION` ✅
+**Evidence status**: `INVALID_FOR_INTENDED_SCENARIO` ⚠️
+
+**Recorded harness verdict**: `PASS_WITH_EXPECTED_DEGRADATION` for the dedupe-outage scenario only
 
 | Metric | Value |
 |--------|-------|
@@ -109,7 +119,7 @@ The nodes-order scenario tested recovery behavior. All 751 transient reorderings
 | **Leakage** | 0 |
 | **Pending work** | 0 |
 
-The nodes-dedupe scenario tested recovery behavior. All 838 transient reorderings were detected and resolved without data loss or ordering violations, confirming fault tolerance.
+The dedupe outage ran, but the configured node jitter and dark-window counters remained zero. The run therefore does not prove the intended T07 nodes-dedupe claim. The original artifacts are retained as retracted evidence.
 
 **Command**: `npm run t07`  
 **Documentation**: [docs/test-07-nodes-dedupe.md](docs/test-07-nodes-dedupe.md)  
@@ -120,7 +130,9 @@ The nodes-dedupe scenario tested recovery behavior. All 838 transient reordering
 
 ## T06: nodes-transport
 
-**Verdict**: `PASS` ✅
+**Evidence status**: `INVALID_FOR_INTENDED_SCENARIO` ⚠️
+
+**Recorded harness verdict**: `PASS` for the partial scenario only
 
 | Metric | Value |
 |--------|-------|
@@ -129,7 +141,7 @@ The nodes-dedupe scenario tested recovery behavior. All 838 transient reordering
 | **Leakage** | 0 |
 | **Pending work** | 0 |
 
-The nodes-transport scenario tested recovery behavior. All 745 transient reorderings were detected and resolved without data loss or ordering violations, confirming fault tolerance.
+Neither the configured node jitter/dark-window behavior nor a mid-run transport outage was observed. Transport disconnects were recorded only during final shutdown, so the run does not prove the T06 claim. The original artifacts are retained as retracted evidence.
 
 **Command**: `npm run t06`  
 **Documentation**: [docs/test-06-nodes-transport.md](docs/test-06-nodes-transport.md)  
@@ -180,7 +192,9 @@ The dedupe-outage scenario tested recovery behavior. All 843 transient reorderin
 
 ## T03: transport-outage
 
-**Verdict**: `PASS` ✅
+**Evidence status**: `INVALID_FOR_INTENDED_SCENARIO` ⚠️
+
+**Recorded harness verdict**: `PASS` for the non-outage workload only
 
 | Metric | Value |
 |--------|-------|
@@ -189,7 +203,7 @@ The dedupe-outage scenario tested recovery behavior. All 843 transient reorderin
 | **Leakage** | 0 |
 | **Pending work** | 0 |
 
-The transport-outage scenario tested recovery behavior. All 733 transient reorderings were detected and resolved without data loss or ordering violations, confirming fault tolerance.
+No transport disconnection occurred during the active test window. The recorded disconnects occurred only during final shutdown after all eight nodes completed, so the run does not prove the T03 transport-outage claim. The original artifacts are retained as retracted evidence.
 
 **Command**: `npm run t03`  
 **Documentation**: [docs/test-03-transport-outage.md](docs/test-03-transport-outage.md)  
@@ -200,7 +214,9 @@ The transport-outage scenario tested recovery behavior. All 733 transient reorde
 
 ## T02: jitter-dark
 
-**Verdict**: `PASS` ✅
+**Evidence status**: `INVALID_FOR_INTENDED_SCENARIO` ⚠️
+
+**Recorded harness verdict**: `PASS` for the normal-node workload only
 
 | Metric | Value |
 |--------|-------|
@@ -209,7 +225,7 @@ The transport-outage scenario tested recovery behavior. All 733 transient reorde
 | **Leakage** | 0 |
 | **Pending work** | 0 |
 
-The jitter-dark scenario tested recovery behavior. All 790 transient reorderings were detected and resolved without data loss or ordering violations, confirming fault tolerance.
+The configured jitter and dark-node lists were present, but the recorded jitter-delay, dark-window, and reconnect counters were all zero. The run therefore does not prove the intended T02 jitter-dark claim. The original artifacts are retained as retracted evidence.
 
 **Command**: `npm run t02`  
 **Documentation**: [docs/test-02-jitter-dark.md](docs/test-02-jitter-dark.md)  

@@ -6,3 +6,5 @@ artifacts/runs/**/monitor-replay.ndjson
 artifacts/runs/**/*-raw-monitor-telemetry.zip
 
 .local/
+.local-test-runs/
+.upstream-work/

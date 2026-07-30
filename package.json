@@ -16,16 +16,16 @@
     "t04": "npx --no-install causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --monitor-scenario monitor-dedupe-outage --duration 8h --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --run-name T04-dedupe-outage-8n-8h",
     "t05": "npx --no-install causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --monitor-scenario monitor-order-outage --duration 8h --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --run-name T05-order-outage-8n-8h",
     "_t06-cmd": "npx --no-install causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --monitor-scenario monitor-transport-outage-burst --jitter-nodes edge-a --dark-nodes edge-b --dark-start-after 10m --duration 8h --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --run-name T06-nodes-transport-8n-8h",
-    "t06": "node scripts/run-composed-test.mjs 6",
+    "t06": "npm run _t06-cmd",
     "_t07-cmd": "npx --no-install causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --monitor-scenario monitor-dedupe-outage --jitter-nodes edge-a --dark-nodes edge-b --dark-start-after 10m --duration 8h --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --run-name T07-nodes-dedupe-8n-8h",
-    "t07": "node scripts/run-composed-test.mjs 7",
+    "t07": "npm run _t07-cmd",
     "_t08-cmd": "npx --no-install causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --monitor-scenario monitor-order-outage --jitter-nodes edge-a --dark-nodes edge-b --dark-start-after 10m --duration 8h --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --run-name T08-nodes-order-8n-8h",
-    "t08": "node scripts/run-composed-test.mjs 8",
-    "t09": "npx --no-install causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --monitor-scenario monitor-dual-outage --duration 8h --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --run-name T09-transport-dedupe-8n-8h",
-    "t10": "npx --no-install causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --monitor-scenario monitor-dual-outage --duration 8h --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --run-name T10-transport-order-8n-8h",
+    "t08": "npm run _t08-cmd",
+    "t09": "npx --no-install causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --monitor-scenario monitor-transport-dedupe-outage --duration 8h --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --run-name T09-transport-dedupe-8n-8h",
+    "t10": "npx --no-install causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --monitor-scenario monitor-transport-order-outage --duration 8h --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --run-name T10-transport-order-8n-8h",
     "t11": "npx --no-install causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --monitor-scenario monitor-dual-outage --duration 8h --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --run-name T11-dedupe-order-8n-8h",
-    "_t12-cmd": "npx --no-install causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --monitor-scenario monitor-dual-outage --jitter-nodes edge-a --dark-nodes edge-b --dark-start-after 10m --duration 8h --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --run-name T12-all-failures-8n-8h",
-    "t12": "node scripts/run-composed-test.mjs 12"
+    "_t12-cmd": "npx --no-install causal-order-testing-adapter-runtime --adapter @causal-order/transport/testing --monitor --monitor-scenario monitor-transport-dedupe-order-outage --jitter-nodes edge-a --dark-nodes edge-b --dark-start-after 10m --duration 8h --time-scale 1 --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h --profile typical-real-world-mesh --run-name T12-all-failures-8n-8h",
+    "t12": "npm run _t12-cmd"
   },
   "keywords": [],
   "author": "",
@@ -33,9 +33,9 @@
   "type": "module",
   "dependencies": {
     "@causal-order/dedupe": "^1.2.0",
-    "@causal-order/monitor": "^0.6.0",
-    "@causal-order/testing": "^0.3.1",
-    "@causal-order/transport": "^0.2.0",
+    "@causal-order/monitor": "file:.release-candidates/causal-order-monitor-0.6.1.tgz",
+    "@causal-order/testing": "file:.release-candidates/causal-order-testing-0.3.3.tgz",
+    "@causal-order/transport": "file:.release-candidates/causal-order-transport-0.2.1.tgz",
     "causal-order": "^1.0.1"
   }
 }

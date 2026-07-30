@@ -1,154 +1,184 @@
 #!/usr/bin/env node
 
-import fs from "fs";
-import path from "path";
-import { execSync } from "child_process";
-import crypto from "crypto";
+import crypto from "node:crypto";
+import { execFileSync } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
+import process from "node:process";
 
-// Audit test compliance against test-plan.md constraints
-function auditTestCompliance(testNum, runPath) {
-  console.log(`\n🔍 Auditing test compliance...`);
-  
-  try {
-    // 1. Log package versions from package-lock.json
-    const lockPath = path.resolve("package-lock.json");
-    const lock = JSON.parse(fs.readFileSync(lockPath, "utf8"));
-    const packages = {
-      "causal-order": lock.packages?.["node_modules/causal-order"]?.version,
-      "@causal-order/transport": lock.packages?.["node_modules/@causal-order/transport"]?.version,
-      "@causal-order/monitor": lock.packages?.["node_modules/@causal-order/monitor"]?.version,
-      "@causal-order/dedupe": lock.packages?.["node_modules/@causal-order/dedupe"]?.version,
-      "@causal-order/testing": lock.packages?.["node_modules/@causal-order/testing"]?.version,
-    };
-    console.log(`   📦 Stack package versions:`);
-    Object.entries(packages).forEach(([pkg, ver]) => {
-      console.log(`      ${pkg}: ${ver || "NOT FOUND"}`);
-    });
-    
-    // 2. Verify telemetry files exist
-    const healthPath = path.join(runPath, "monitor-health.ndjson");
-    const replayPath = path.join(runPath, "monitor-replay.ndjson");
-    if (!fs.existsSync(healthPath)) {
-      throw new Error(`monitor-health.ndjson not found at ${healthPath}`);
-    }
-    if (!fs.existsSync(replayPath)) {
-      throw new Error(`monitor-replay.ndjson not found at ${replayPath}`);
-    }
-    console.log(`   ✅ Telemetry files present (health: ${fs.statSync(healthPath).size} bytes, replay: ${fs.statSync(replayPath).size} bytes)`);
-    
-    // 3. Validate test config against test-plan.md Common contract
-    const summaryPath = path.join(runPath, "summary.json");
-    if (!fs.existsSync(summaryPath)) {
-      throw new Error(`summary.json not found at ${summaryPath}`);
-    }
-    const summary = JSON.parse(fs.readFileSync(summaryPath, "utf8"));
-    
-    const nodeCount = summary.config?.nodeIds?.length || 0;
-    if (nodeCount !== 8) {
-      throw new Error(`Expected 8 nodes, got ${nodeCount}`);
-    }
-    
-    const timeScale = summary.config?.timeScale || 0;
-    if (timeScale !== 1) {
-      throw new Error(`Expected time-scale 1, got ${timeScale}`);
-    }
-    
-    const durationMs = summary.config?.durationMs || 0;
-    const durationHours = durationMs / (1000 * 60 * 60);
-    if (durationMs < 8 * 60 * 60 * 1000) {
-      throw new Error(`Expected duration >= 8h, got ${durationHours.toFixed(1)}h`);
-    }
-    
-    console.log(`   ✅ Test configuration complies with test-plan.md:`);
-    console.log(`      Nodes: ${nodeCount}, Time-scale: ${timeScale}x, Duration: ${durationHours.toFixed(1)}h`);
-    
-    return packages;
-  } catch (error) {
-    console.error(`   ❌ Compliance audit failed: ${error.message}`);
-    process.exit(1);
-  }
-}
+const TEST_CONTRACTS = {
+  "01": { slug: "baseline", monitorScenario: null },
+  "02": { slug: "jitter-dark", monitorScenario: null, nodeFaults: true },
+  "03": {
+    slug: "transport-outage",
+    monitorScenario: "monitor-transport-outage-burst",
+    transport: true,
+  },
+  "04": {
+    slug: "dedupe-outage",
+    monitorScenario: "monitor-dedupe-outage",
+    dedupe: true,
+  },
+  "05": {
+    slug: "order-outage",
+    monitorScenario: "monitor-order-outage",
+    order: true,
+  },
+  "06": {
+    slug: "nodes-transport",
+    monitorScenario: "monitor-transport-outage-burst",
+    nodeFaults: true,
+    transport: true,
+  },
+  "07": {
+    slug: "nodes-dedupe",
+    monitorScenario: "monitor-dedupe-outage",
+    nodeFaults: true,
+    dedupe: true,
+  },
+  "08": {
+    slug: "nodes-order",
+    monitorScenario: "monitor-order-outage",
+    nodeFaults: true,
+    order: true,
+  },
+  "09": {
+    slug: "transport-dedupe",
+    monitorScenario: "monitor-transport-dedupe-outage",
+    transport: true,
+    dedupe: true,
+  },
+  "10": {
+    slug: "transport-order",
+    monitorScenario: "monitor-transport-order-outage",
+    transport: true,
+    order: true,
+  },
+  "11": {
+    slug: "dedupe-order",
+    monitorScenario: "monitor-dual-outage",
+    dedupe: true,
+    order: true,
+  },
+  "12": {
+    slug: "all-failures",
+    monitorScenario: "monitor-transport-dedupe-order-outage",
+    nodeFaults: true,
+    transport: true,
+    dedupe: true,
+    order: true,
+  },
+};
 
-const testRunPath = process.argv[2];
+const REQUIRED_PACKAGE_VERSIONS = {
+  "@causal-order/transport": "0.2.1",
+  "@causal-order/monitor": "0.6.1",
+  "@causal-order/testing": "0.3.3",
+};
+
+const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+const verifyOnly = process.argv.includes("--verify-only");
+const noPush = process.argv.includes("--no-push");
+const testRunPath = process.argv
+  .slice(2)
+  .find((argument) => !argument.startsWith("--"));
 
 if (!testRunPath) {
-  console.error("Usage: npm run finalize-test -- <test-run-folder-name>");
-  console.error("Example: npm run finalize-test -- 2026-07-24T17-07-12Z-t02-jitter-dark-8n-8h");
+  console.error(
+    "Usage: npm run finalize-test -- <test-run-folder-name> [--verify-only] [--no-push]",
+  );
+  console.error(
+    "Example: npm run finalize-test -- 2026-07-30T12-00-00Z-t12-all-failures-8n-8h",
+  );
   process.exit(1);
 }
 
-const fullPath = path.join("artifacts/runs", testRunPath);
-
-if (!fs.existsSync(fullPath)) {
-  console.error(`❌ Test run folder not found: ${fullPath}`);
-  process.exit(1);
-}
-
-// Parse folder name: 2026-07-24T17-07-12Z-t02-jitter-dark-8n-8h
-const match = testRunPath.match(/t(\d+)-(.+?)-\d+n-/);
+const match = testRunPath.match(
+  /^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}Z-t(\d{2})-([a-z0-9-]+)-8n-8h$/i,
+);
 if (!match) {
-  console.error("❌ Invalid folder name format. Expected: ...tXX-scenario-...Z-tXX-scenario-8n-8h");
+  console.error(
+    "Invalid folder name. Expected: YYYY-MM-DDTHH-MM-SSZ-tXX-scenario-8n-8h",
+  );
   process.exit(1);
 }
 
 const testNum = match[1];
-const scenario = match[2];
+const scenario = match[2].toLowerCase();
 const testId = `test-${testNum}`;
-
-console.log(`📦 Finalizing T${testNum}: ${scenario}`);
-
-// Step 1: Run results script
-console.log(`\n1️⃣  Running results standardization...`);
-try {
-  execSync(`npm run results -- "artifacts\\runs\\${testRunPath}"`, { stdio: "inherit" });
-} catch (e) {
-  console.error("❌ Results script failed");
+const contract = TEST_CONTRACTS[testNum];
+if (!contract) {
+  console.error(`No evidence contract is defined for T${testNum}`);
+  process.exit(1);
+}
+if (scenario !== contract.slug) {
+  console.error(
+    `T${testNum} must use scenario name ${contract.slug}; folder contains ${scenario}`,
+  );
   process.exit(1);
 }
 
-// Step 2: Read standard result for metrics
-console.log(`\n2️⃣  Reading metrics...`);
-const resultJsonPath = path.join(fullPath, "standard-result.json");
-const resultMdPath = path.join(fullPath, "standard-result.md");
-
-if (!fs.existsSync(resultJsonPath)) {
-  console.error(`❌ standard-result.json not found`);
+const fullPath = path.join("artifacts", "runs", testRunPath);
+if (!fs.existsSync(fullPath)) {
+  console.error(`Test run folder not found: ${fullPath}`);
   process.exit(1);
 }
 
-const result = JSON.parse(fs.readFileSync(resultJsonPath, "utf8"));
-const verdict = result.result.verdict.toUpperCase();
-const eventsGenerated = result.traffic.generated;
-const anomalies = result.ordering.anomalies;
+console.log(`Finalizing T${testNum}: ${scenario}`);
+const summaryPath = path.join(fullPath, "summary.json");
+const runConfigPath = path.join(fullPath, "run-config.json");
+const summary = readJson(summaryPath);
+const runConfig = readJson(runConfigPath);
 
-// Step 2.5: Audit compliance
-auditTestCompliance(testNum, fullPath);
+console.log("\n0. Checking recorded fault evidence...");
+auditRecordedFaults({ testNum, scenario, contract, summary, runConfig });
+console.log("   Recorded fault evidence: PASS");
 
-// Step 3: Create documentation
-console.log(`\n3️⃣  Creating documentation...`);
+console.log("\n1. Standardizing results...");
+run(npmCommand, ["run", "results", "--", fullPath], { stdio: "inherit" });
+
+const resultPath = path.join(fullPath, "standard-result.json");
+const result = readJson(resultPath);
+
+console.log("\n2. Auditing evidence contract...");
+const packages = auditEvidence({
+  testNum,
+  scenario,
+  contract,
+  fullPath,
+  result,
+  summary,
+  runConfig,
+});
+for (const [packageName, version] of Object.entries(packages)) {
+  console.log(`   ${packageName}: ${version}`);
+}
+console.log("   Evidence contract: PASS");
+
+if (verifyOnly) {
+  console.log("\nVerification complete. No documentation, commit, tag, or push was created.");
+  process.exit(0);
+}
+
+const verdict = String(result.result.verdict).toUpperCase();
+const eventsGenerated = Number(result.traffic.generated);
+const anomalies = Number(result.ordering.anomalies);
+const formattedEvents = eventsGenerated.toLocaleString("en-US");
 const docPath = path.join("docs", `${testId}-${scenario}.md`);
 
-if (fs.existsSync(docPath)) {
-  console.log(`⚠️  ${docPath} already exists, skipping`);
-} else {
-  const docContent = `# ${testId.toUpperCase()}: ${scenario}
+console.log("\n3. Writing test documentation...");
+const docContent = `# TEST-${testNum}: ${scenario}
 
 ## Objective
 
-Verify the causal-order stack's fault tolerance through a controlled test scenario injecting network faults and measuring recovery without data loss or ordering violations.
+Verify the causal-order stack's fault tolerance through the T${testNum} ${scenario} scenario without data loss or ordering violations.
 
 ## Requirements
 
 - **Duration**: 8 hours wall-clock time
 - **Topology**: 8 nodes with cross-edge communication
 - **Fault injection**: ${scenario}
-- **Published API**: @causal-order/testing
-
-## Constraints
-
-- Stack implementation is a black box; only published testing APIs may be used
-- All events must be accounted for without artificial drops
-- No shortcuts or privileged access to internal state
+- **Published API**: \`@causal-order/testing\`
 
 ## Run Command
 
@@ -160,48 +190,42 @@ Result folder: \`artifacts/runs/${testRunPath}\`
 
 ## Evidence
 
-The published @causal-order/testing APIs recorded the following:
-
-- **Verdict**: ${verdict}
-- **Events generated**: ${eventsGenerated.toLocaleString()}
+- **Verdict**: \`${verdict}\`
+- **Events generated**: ${formattedEvents}
 - **Anomalies detected and resolved**: ${anomalies}
-- **Data loss**: 0 (zero leakage)
-- **Pending work**: 0 (clean drain)
+- **Data loss**: 0
+- **Pending work**: 0
+- **Monitor scenario**: \`${contract.monitorScenario ?? "none"}\`
 
-Detailed metrics: [standard-result.md](${testRunPath}/standard-result.md)
+[Detailed metrics](../artifacts/runs/${testRunPath}/standard-result.md)
 
 ## Proof Criteria
 
-✅ All 9 accounting and ordering checks PASS  
-✅ Verdict is PASS  
-✅ Zero pending work at shutdown  
-✅ Zero duplicate leakage  
-✅ All anomalies resolved without corruption  
+- All standardized accounting and ordering checks passed
+- The configured scenario matches the T${testNum} evidence contract
+- Every required fault was observed
+- The stack drained with zero pending work and zero leakage
 
-The stack proves robust handling of faults within the test scenario.
+This run satisfies the T${testNum} ${scenario} evidence contract.
 `;
+fs.writeFileSync(docPath, docContent);
+console.log(`   Wrote ${docPath}`);
 
-  fs.writeFileSync(docPath, docContent);
-  console.log(`   Created ${docPath}`);
-}
-
-// Step 4: Update TESTLOG.md
-console.log(`\n4️⃣  Updating TESTLOG.md...`);
+console.log("\n4. Updating TESTLOG.md...");
 const testlogPath = "TESTLOG.md";
 const testlogContent = fs.readFileSync(testlogPath, "utf8");
-
 const newEntry = `## T${testNum}: ${scenario}
 
 **Verdict**: \`${verdict}\` ✅
 
 | Metric | Value |
-|--------|-------|
-| **Events generated** | ${eventsGenerated.toLocaleString()} |
+| --- | --- |
+| **Events generated** | ${formattedEvents} |
 | **Anomalies** | ${anomalies} |
 | **Leakage** | 0 |
 | **Pending work** | 0 |
 
-The ${scenario} scenario tested recovery behavior. All ${anomalies} transient reorderings were detected and resolved without data loss or ordering violations, confirming fault tolerance.
+The recorded scenario matched the T${testNum} evidence contract. Every required fault was observed, all standardized checks passed, and the stack drained cleanly.
 
 **Command**: \`npm run t${testNum}\`  
 **Documentation**: [docs/${testId}-${scenario}.md](docs/${testId}-${scenario}.md)  
@@ -211,98 +235,92 @@ The ${scenario} scenario tested recovery behavior. All ${anomalies} transient re
 ---
 
 `;
-
-const updatedTestlog = newEntry + testlogContent;
+const sectionPattern = new RegExp(
+  `^## T${testNum}: [\\s\\S]*?^---\\r?\\n?`,
+  "m",
+);
+const updatedTestlog = sectionPattern.test(testlogContent)
+  ? testlogContent.replace(sectionPattern, newEntry)
+  : newEntry + testlogContent;
 fs.writeFileSync(testlogPath, updatedTestlog);
-console.log(`   Updated TESTLOG.md with T${testNum} entry`);
+console.log(`   Replaced the T${testNum} entry`);
 
-// Step 5: Git commit and tag
-console.log(`\n5️⃣  Committing and tagging...`);
-try {
-  execSync(`git add docs/${testId}-${scenario}.md TESTLOG.md .gitignore`, { stdio: "pipe" });
-  try {
-    execSync(`git commit -m "Record T${testNum} test run: ${scenario} (${verdict})"`, { stdio: "pipe" });
-    console.log(`   Committed`);
-  } catch {
-    console.log(`   No new changes to commit`);
-  }
-
-  const tagName = `evidence-t${testNum}`;
-  try {
-    execSync(`git tag -a ${tagName} -m "T${testNum} eight-node eight-hour ${scenario} evidence"`, { stdio: "pipe" });
-    console.log(`   Tagged as ${tagName}`);
-  } catch {
-    console.log(`   Tag ${tagName} already exists`);
-  }
-} catch (e) {
-  console.error("❌ Git operations failed");
-  process.exit(1);
-}
-
-// Step 6: Push
-console.log(`\n6️⃣  Pushing to remote...`);
-try {
-  execSync(`git push origin main evidence-t${testNum}`, { stdio: "pipe" });
-  console.log(`   Pushed commit and tag`);
-} catch (e) {
-  console.error("⚠️  Push failed (may already be pushed)");
-}
-
-// Step 7: Create telemetry zip
-console.log(`\n7️⃣  Creating telemetry archive...`);
-const zipPath = path.join(fullPath, `T${testNum}-${scenario}-raw-monitor-telemetry.zip`);
+console.log("\n5. Creating telemetry archive...");
 const healthPath = path.join(fullPath, "monitor-health.ndjson");
 const replayPath = path.join(fullPath, "monitor-replay.ndjson");
+const zipPath = path.join(
+  fullPath,
+  `T${testNum}-${scenario}-raw-monitor-telemetry.zip`,
+);
+createTelemetryArchive(healthPath, replayPath, zipPath);
+const hash = crypto
+  .createHash("sha256")
+  .update(fs.readFileSync(zipPath))
+  .digest("hex")
+  .toUpperCase();
+console.log(`   ${path.basename(zipPath)}`);
+console.log(`   SHA-256: ${hash}`);
 
-if (!fs.existsSync(healthPath) || !fs.existsSync(replayPath)) {
-  console.error("❌ Monitor telemetry files not found");
-  process.exit(1);
+console.log("\n6. Committing and tagging...");
+const evidenceFiles = [
+  docPath,
+  testlogPath,
+  resultPath,
+  path.join(fullPath, "standard-result.md"),
+  summaryPath,
+  runConfigPath,
+  path.join(fullPath, "monitor-summary.json"),
+  path.join(fullPath, "anomalies.ndjson"),
+  path.join(fullPath, "heartbeats.ndjson"),
+  path.join(fullPath, "lifecycle.ndjson"),
+  path.join(fullPath, "monitor-heartbeats.ndjson"),
+].filter((filePath) => fs.existsSync(filePath));
+run("git", ["add", "--", ...evidenceFiles]);
+if (hasStagedChanges()) {
+  run("git", [
+    "commit",
+    "-m",
+    `Record corrected T${testNum} test run: ${scenario} (${verdict})`,
+  ]);
+  console.log("   Committed evidence");
+} else {
+  console.log("   No new evidence changes to commit");
 }
 
-// Use Node's built-in zip (or show instruction if not available)
-try {
-  const AdmZip = (await import("adm-zip")).default;
-  const zip = new AdmZip();
-  zip.addFile("monitor-health.ndjson", fs.readFileSync(healthPath));
-  zip.addFile("monitor-replay.ndjson", fs.readFileSync(replayPath));
-  zip.writeZip(zipPath);
-  console.log(`   Created ${path.basename(zipPath)}`);
-} catch {
-  // Fallback: try PowerShell if adm-zip not available
-  try {
-    execSync(`powershell -Command "Compress-Archive -Path '${healthPath}', '${replayPath}' -DestinationPath '${zipPath}' -Force"`, {
-      stdio: "pipe",
-    });
-    console.log(`   Created ${path.basename(zipPath)}`);
-  } catch (e) {
-    console.error("❌ Could not create zip archive");
-    console.error(
-      "   Install adm-zip: npm install --save-dev adm-zip"
-    );
-    process.exit(1);
+const tagName = nextEvidenceTag(`evidence-t${testNum}`);
+run("git", [
+  "tag",
+  "-a",
+  tagName,
+  "-m",
+  `T${testNum} corrected eight-node eight-hour ${scenario} evidence`,
+]);
+console.log(`   Tagged as ${tagName}`);
+
+if (!noPush) {
+  console.log("\n7. Pushing commit and tag...");
+  const branch = capture("git", ["branch", "--show-current"]).trim();
+  if (!branch) {
+    throw new Error("Cannot push evidence from a detached HEAD");
   }
+  try {
+    run("git", ["push", "origin", branch, tagName], { stdio: "inherit" });
+    console.log(`   Pushed ${branch} and ${tagName}`);
+  } catch (error) {
+    console.warn(`   Push failed; the local commit and ${tagName} were retained.`);
+    console.warn(`   ${error instanceof Error ? error.message : String(error)}`);
+  }
+} else {
+  console.log("\n7. Push skipped (--no-push).");
 }
-
-// Step 8: Calculate SHA-256
-console.log(`\n8️⃣  Computing SHA-256...`);
-const fileBuffer = fs.readFileSync(zipPath);
-const hash = crypto.createHash("sha256").update(fileBuffer).digest("hex").toUpperCase();
-console.log(`   ${hash}`);
-
-// Step 9: Output release template
-console.log(`\n✅ Finalization complete!\n`);
-console.log(`📋 Release Template:`);
-console.log(`${"=".repeat(70)}\n`);
 
 const releaseBody = `## T${testNum} ${scenario} evidence
 
-Raw monitor telemetry from the successful eight-node, eight-hour fault-injection test of the causal-order stack.
+Raw monitor telemetry from the successful corrected eight-node, eight-hour fault-injection test of the causal-order stack.
 
 The test scenario: ${scenario}
 
-The published @causal-order/testing APIs recorded a **${verdict}** verdict. All ${eventsGenerated.toLocaleString()} unique events were ordered correctly, ${anomalies} anomalies (transient reorderings) were detected and resolved without data loss, and the stack drained cleanly. Zero pending work and zero leakage confirms fault tolerance.
-
-The attached archive contains \`monitor-health.ndjson\` and \`monitor-replay.ndjson\`. Compact summaries, configuration, anomaly evidence, and standardized results remain available in the repository.
+The published \`@causal-order/testing\` APIs recorded a **${verdict}** verdict. All ${formattedEvents} unique events were ordered correctly, ${anomalies} anomalies were detected and resolved without data loss, and the stack drained cleanly.
 
 [View the standardized result](https://github.com/GazaliAhmad/causal-order-proving/blob/main/artifacts/runs/${testRunPath}/standard-result.md)
 
@@ -312,9 +330,241 @@ The attached archive contains \`monitor-health.ndjson\` and \`monitor-replay.ndj
 SHA-256: \`${hash}\`
 `;
 
-console.log(`Title: T${testNum} eight-node eight-hour ${scenario} evidence`);
-console.log(`Tag: evidence-t${testNum}\n`);
+console.log("\nFinalization complete.");
+console.log(`\nRelease title: T${testNum} corrected eight-node eight-hour ${scenario} evidence`);
+console.log(`Tag: ${tagName}\n`);
 console.log(releaseBody);
-console.log(`${"=".repeat(70)}\n`);
-console.log(`📦 Zip file: artifacts/runs/${testRunPath}/T${testNum}-${scenario}-raw-monitor-telemetry.zip`);
-console.log(`📌 Next: Upload zip to GitHub release evidence-t${testNum}\n`);
+console.log(`Archive: ${zipPath}`);
+
+function auditEvidence({
+  testNum,
+  scenario,
+  contract,
+  fullPath,
+  result,
+  summary,
+  runConfig,
+}) {
+  auditRecordedFaults({ testNum, scenario, contract, summary, runConfig });
+  const lock = readJson("package-lock.json");
+  const packages = {
+    "causal-order": lock.packages?.["node_modules/causal-order"]?.version,
+    "@causal-order/transport":
+      lock.packages?.["node_modules/@causal-order/transport"]?.version,
+    "@causal-order/monitor":
+      lock.packages?.["node_modules/@causal-order/monitor"]?.version,
+    "@causal-order/dedupe":
+      lock.packages?.["node_modules/@causal-order/dedupe"]?.version,
+    "@causal-order/testing":
+      lock.packages?.["node_modules/@causal-order/testing"]?.version,
+  };
+  for (const [packageName, expectedVersion] of Object.entries(
+    REQUIRED_PACKAGE_VERSIONS,
+  )) {
+    requireCondition(
+      packages[packageName] === expectedVersion,
+      `Expected ${packageName} ${expectedVersion}, got ${packages[packageName] ?? "NOT FOUND"}`,
+    );
+    requireCondition(
+      result.identity?.packageVersions?.[packageName] === expectedVersion,
+      `Standard result was not generated with ${packageName} ${expectedVersion}`,
+    );
+  }
+
+  for (const telemetryFile of [
+    "monitor-health.ndjson",
+    "monitor-replay.ndjson",
+  ]) {
+    const telemetryPath = path.join(fullPath, telemetryFile);
+    requireCondition(
+      fs.existsSync(telemetryPath) && fs.statSync(telemetryPath).size > 0,
+      `${telemetryFile} is missing or empty`,
+    );
+  }
+
+  requireCondition(
+    ["pass", "pass_with_expected_degradation"].includes(
+      String(result.result?.verdict ?? "").toLowerCase(),
+    ),
+    `Cannot finalize harness verdict ${result.result?.verdict ?? "missing"}`,
+  );
+  requireCondition(
+    Array.isArray(result.checks) &&
+      result.checks.length > 0 &&
+      result.checks.every((check) => check.status === "pass"),
+    "One or more standardized evidence checks failed",
+  );
+  return packages;
+}
+
+function auditRecordedFaults({
+  testNum,
+  scenario,
+  contract,
+  summary,
+  runConfig,
+}) {
+  requireCondition(
+    runConfig.runName === `T${testNum}-${scenario}-8n-8h`,
+    `Unexpected run name: ${runConfig.runName}`,
+  );
+  requireCondition(
+    Array.isArray(runConfig.nodeIds) && runConfig.nodeIds.length === 8,
+    `Expected 8 nodes, got ${runConfig.nodeIds?.length ?? 0}`,
+  );
+  requireCondition(runConfig.timeScale === 1, "Expected time-scale 1");
+  requireCondition(
+    Number(runConfig.durationMs) >= 8 * 60 * 60 * 1000,
+    "Expected at least 8 hours of wall-clock duration",
+  );
+
+  const recordedScenario =
+    summary.monitor?.scenarioId ?? runConfig.monitorConfig?.scenarioId ?? null;
+  requireCondition(
+    recordedScenario === contract.monitorScenario,
+    `T${testNum} requires ${contract.monitorScenario ?? "no monitor scenario"}, got ${recordedScenario ?? "none"}`,
+  );
+
+  const faultInjection = runConfig.faultInjection ?? {};
+  const jitterNodes = faultInjection.jitterNodeIds ?? [];
+  const darkNodes = faultInjection.darkNodeIds ?? [];
+  if (contract.nodeFaults) {
+    requireCondition(
+      jitterNodes.includes("edge-a"),
+      "Required jitter node edge-a is not configured",
+    );
+    requireCondition(
+      darkNodes.includes("edge-b"),
+      "Required dark node edge-b is not configured",
+    );
+    requireCondition(
+      Number(summary.simulation?.jitterExtraDelaysApplied ?? 0) > 0,
+      "Configured node jitter was not exercised",
+    );
+    requireCondition(
+      Number(summary.simulation?.darkWindowsEntered ?? 0) > 0,
+      "Configured node dark window was not exercised",
+    );
+    requireCondition(
+      Number(summary.simulation?.reconnects ?? 0) > 0,
+      "Configured dark node did not reconnect",
+    );
+  } else {
+    requireCondition(
+      jitterNodes.length === 0 && darkNodes.length === 0,
+      `T${testNum} unexpectedly configured node faults`,
+    );
+  }
+
+  const analysis = summary.monitor?.analysis ?? {};
+  if (contract.transport) {
+    requireCondition(
+      Number(summary.monitor?.scenarioTransportOutages ?? 0) > 0,
+      `${contract.monitorScenario} did not inject a mid-run transport outage`,
+    );
+  }
+  if (contract.dedupe && !contract.order) {
+    requireCondition(
+      analysis.sawDedupeBypass === true,
+      `${contract.monitorScenario} did not exercise dedupe bypass`,
+    );
+  }
+  if (contract.order && !contract.dedupe) {
+    requireCondition(
+      analysis.sawOrderBufferOnly === true,
+      `${contract.monitorScenario} did not exercise order buffering`,
+    );
+    requireCondition(
+      analysis.sawReplayThroughDedupe === true,
+      `${contract.monitorScenario} did not exercise replay through dedupe`,
+    );
+  }
+  if (contract.dedupe && contract.order) {
+    requireCondition(
+      analysis.sawFullOutageBuffer === true,
+      `${contract.monitorScenario} did not exercise full-outage buffering`,
+    );
+    requireCondition(
+      analysis.sawReplayThroughDedupe === true,
+      `${contract.monitorScenario} did not exercise replay through dedupe`,
+    );
+  }
+}
+
+function createTelemetryArchive(healthPath, replayPath, zipPath) {
+  requireCondition(fs.existsSync(healthPath), `${healthPath} not found`);
+  requireCondition(fs.existsSync(replayPath), `${replayPath} not found`);
+  try {
+    const powershell =
+      process.platform === "win32"
+        ? "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+        : "pwsh";
+    const quotePowerShellLiteral = (value) =>
+      `'${path.resolve(value).replaceAll("'", "''")}'`;
+    const archiveCommand = [
+      "Compress-Archive -LiteralPath",
+      `${quotePowerShellLiteral(healthPath)},${quotePowerShellLiteral(replayPath)}`,
+      "-DestinationPath",
+      quotePowerShellLiteral(zipPath),
+      "-Force",
+    ].join(" ");
+    run(powershell, [
+      "-NoProfile",
+      "-Command",
+      archiveCommand,
+    ]);
+  } catch (error) {
+    throw new Error(
+      `Could not create telemetry archive: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+}
+
+function nextEvidenceTag(baseTag) {
+  const existing = new Set(
+    capture("git", ["tag", "--list", `${baseTag}*`])
+      .split(/\r?\n/)
+      .filter(Boolean),
+  );
+  if (!existing.has(baseTag)) {
+    return baseTag;
+  }
+  for (let version = 2; ; version += 1) {
+    const candidate = `${baseTag}-v${version}`;
+    if (!existing.has(candidate)) {
+      return candidate;
+    }
+  }
+}
+
+function hasStagedChanges() {
+  try {
+    run("git", ["diff", "--cached", "--quiet"]);
+    return false;
+  } catch {
+    return true;
+  }
+}
+
+function readJson(filePath) {
+  requireCondition(fs.existsSync(filePath), `${filePath} not found`);
+  return JSON.parse(fs.readFileSync(filePath, "utf8"));
+}
+
+function requireCondition(condition, message) {
+  if (!condition) {
+    throw new Error(message);
+  }
+}
+
+function run(command, args, options = {}) {
+  return execFileSync(command, args, {
+    cwd: process.cwd(),
+    stdio: options.stdio ?? "pipe",
+    encoding: "utf8",
+  });
+}
+
+function capture(command, args) {
+  return run(command, args, { stdio: "pipe" });
+}

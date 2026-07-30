@@ -1,5 +1,10 @@
 # Test 02: eight-node with jitter and dark window
 
+> [!WARNING]
+> **RETRACTED:** The published run contained the requested node-fault
+> configuration, but its jitter-delay, dark-window, and reconnect counters were
+> all zero. It must not be used as evidence for the intended T02 claim.
+
 ## Objective
 
 Verify that the published stack handles sustained operation under combined node faults without data loss or ordering violations.
@@ -69,12 +74,16 @@ npx --no-install causal-order-testing-adapter-runtime \
 
 Artifacts are written beneath `artifacts/runs/`.
 
-The test captures the same baseline references as T01, plus:
+The original run is retained at
+`artifacts/runs/2026-07-24T17-07-12Z-t02-jitter-dark-8n-8h`.
 
-- jitter impact on edge-a: queue depth, latency variance, duplicate distribution;
-- dark-window recovery on edge-b: connection timeout behavior, reconnection timing, work resumption;
-- anomaly classification across the failure window and recovery phases; and
-- monitor buffering and replay activity during the dark period.
+- **Evidence status**: `INVALID_FOR_INTENDED_SCENARIO`
+- **Recorded harness verdict**: `PASS` for the normal-node workload only
+- **Jitter delays applied**: 0
+- **Dark windows entered**: 0
+- **Dark-node reconnects**: 0
+
+[Detailed metrics](../artifacts/runs/2026-07-24T17-07-12Z-t02-jitter-dark-8n-8h/standard-result.md)
 
 ## Proof criteria
 
@@ -93,3 +102,6 @@ Test 02 passes only when:
 - the harness records `pass`.
 
 Anomalies are expected and permitted—the stack proves its correctness by handling them without data loss or ordering violation.
+
+The retained run does not meet these proof criteria. A corrected eight-hour run
+and a new evidence tag are required.

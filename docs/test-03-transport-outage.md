@@ -1,5 +1,10 @@
 # TEST-03: transport-outage
 
+> [!WARNING]
+> **RETRACTED:** This run did not exercise the intended transport outage. No
+> transport disconnection occurred during the active test window; the recorded
+> disconnects occurred only during final shutdown.
+
 ## Objective
 
 Verify the causal-order stack's fault tolerance through a controlled test scenario injecting network faults and measuring recovery without data loss or ordering violations.
@@ -27,22 +32,25 @@ Result folder: `artifacts/runs/2026-07-25T03-45-15Z-t03-transport-outage-8n-8h`
 
 ## Evidence
 
-The published @causal-order/testing APIs recorded the following:
+The published `@causal-order/testing` APIs recorded the following for the non-outage workload that actually ran:
 
-- **Verdict**: PASS
+- **Evidence status**: `INVALID_FOR_INTENDED_SCENARIO`
+- **Recorded harness verdict**: `PASS` for the non-outage workload only
 - **Events generated**: 564,232
 - **Anomalies detected and resolved**: 733
 - **Data loss**: 0 (zero leakage)
 - **Pending work**: 0 (clean drain)
 
-Detailed metrics: [standard-result.md](2026-07-25T03-45-15Z-t03-transport-outage-8n-8h/standard-result.md)
+**Actual scenario:** normal transport operation with the `typical-real-world-mesh` workload and monitor enabled.
+
+**Missing intended fault:** mid-run transport outage and recovery.
+
+[Detailed metrics](../artifacts/runs/2026-07-25T03-45-15Z-t03-transport-outage-8n-8h/standard-result.md)
 
 ## Proof Criteria
 
-✅ All 9 accounting and ordering checks PASS  
-✅ Verdict is PASS  
-✅ Zero pending work at shutdown  
-✅ Zero duplicate leakage  
-✅ All anomalies resolved without corruption  
+- ❌ Mid-run transport disconnect: not observed
+- ❌ Mid-run transport reconnect: not observed
+- ✅ Final accounting and drain checks passed for the workload that ran
 
-The stack proves robust handling of faults within the test scenario.
+This evidence does not satisfy T03. A corrected eight-hour run and a new evidence tag are required.
