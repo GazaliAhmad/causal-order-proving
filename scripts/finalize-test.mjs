@@ -76,7 +76,6 @@ const REQUIRED_PACKAGE_VERSIONS = {
   "@causal-order/testing": "0.3.3",
 };
 
-const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 const verifyOnly = process.argv.includes("--verify-only");
 const noPush = process.argv.includes("--no-push");
 const testRunPath = process.argv
@@ -135,7 +134,11 @@ auditRecordedFaults({ testNum, scenario, contract, summary, runConfig });
 console.log("   Recorded fault evidence: PASS");
 
 console.log("\n1. Standardizing results...");
-run(npmCommand, ["run", "results", "--", fullPath], { stdio: "inherit" });
+run(
+  process.execPath,
+  [path.join("scripts", "standardize-result.mjs"), fullPath],
+  { stdio: "inherit" },
+);
 
 const resultPath = path.join(fullPath, "standard-result.json");
 const result = readJson(resultPath);
