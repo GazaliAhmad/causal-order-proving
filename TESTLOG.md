@@ -1,3 +1,23 @@
+## T12: all-failures
+
+**Verdict**: `PASS` ✅
+
+| Metric | Value |
+|--------|-------|
+| **Events generated** | 562,871 |
+| **Anomalies** | 770 |
+| **Leakage** | 0 |
+| **Pending work** | 0 |
+
+The all-failures scenario tested recovery behavior. All 770 transient reorderings were detected and resolved without data loss or ordering violations, confirming fault tolerance.
+
+**Command**: `npm run t12`  
+**Documentation**: [docs/test-12-all-failures.md](docs/test-12-all-failures.md)  
+**Results**: [standard-result.md](artifacts/runs/2026-07-29T16-59-10Z-t12-all-failures-8n-8h/standard-result.md)  
+**Evidence**: [standard-result.json](artifacts/runs/2026-07-29T16-59-10Z-t12-all-failures-8n-8h/standard-result.json)
+
+---
+
 ## T11: dedupe-order
 
 **Verdict**: `PASS` ✅
