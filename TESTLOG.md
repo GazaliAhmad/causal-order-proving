@@ -18,6 +18,26 @@ The recorded scenario matched the T03 evidence contract. Every required fault wa
 
 ---
 
+## T02: jitter-dark — corrected second run (2026-07-30)
+
+**Verdict**: `PASS` ✅
+
+| Metric | Value |
+| --- | --- |
+| **Events generated** | 551,416 |
+| **Anomalies** | 1129 |
+| **Leakage** | 0 |
+| **Pending work** | 0 |
+
+The recorded scenario matched the T02 evidence contract. Every required fault was observed, all standardized checks passed, and the stack drained cleanly.
+
+**Command**: `npm run t02`
+**Documentation**: [docs/test-02-jitter-dark.md](docs/test-02-jitter-dark.md)
+**Results**: [standard-result.md](artifacts/runs/2026-07-30T13-01-39Z-t02-jitter-dark-8n-8h/standard-result.md)
+**Evidence**: [standard-result.json](artifacts/runs/2026-07-30T13-01-39Z-t02-jitter-dark-8n-8h/standard-result.json)
+
+---
+
 ## T12: all-failures
 
 **Evidence status**: `INVALID_FOR_INTENDED_SCENARIO` ⚠️
@@ -256,27 +276,6 @@ The configured jitter and dark-node lists were present, but the recorded jitter-
 **Evidence**: [standard-result.json](artifacts/runs/2026-07-24T17-07-12Z-t02-jitter-dark-8n-8h/standard-result.json)
 
 ---
-
-## T02: jitter-dark — corrected second run (2026-07-30)
-
-**Verdict**: `PASS` ✅
-
-| Metric | Value |
-| --- | --- |
-| **Events generated** | 551,416 |
-| **Anomalies** | 1129 |
-| **Leakage** | 0 |
-| **Pending work** | 0 |
-
-The recorded scenario matched the T02 evidence contract. Every required fault was observed, all standardized checks passed, and the stack drained cleanly.
-
-**Command**: `npm run t02`  
-**Documentation**: [docs/test-02-jitter-dark.md](docs/test-02-jitter-dark.md)  
-**Results**: [standard-result.md](artifacts/runs/2026-07-30T13-01-39Z-t02-jitter-dark-8n-8h/standard-result.md)  
-**Evidence**: [standard-result.json](artifacts/runs/2026-07-30T13-01-39Z-t02-jitter-dark-8n-8h/standard-result.json)
-
----
-
 
 # Test log
 
