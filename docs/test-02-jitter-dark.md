@@ -73,9 +73,10 @@ Artifacts are written beneath `artifacts/runs/`.
 ## First T02 run — 2026-07-24
 
 > [!WARNING]
-> **RETRACTED:** The published run contained the requested node-fault
-> configuration, but its jitter-delay, dark-window, and reconnect counters were
-> all zero. It must not be used as evidence for the intended T02 claim.
+> **RETRACTED:** The run was published as a jitter-and-dark-window test, but the
+> executed configuration did not produce the required node faults. Its
+> jitter-delay, dark-window, and reconnect counters were all zero. It must not
+> be used as evidence for the intended T02 claim.
 
 Result folder: `artifacts/runs/2026-07-24T17-07-12Z-t02-jitter-dark-8n-8h`
 
