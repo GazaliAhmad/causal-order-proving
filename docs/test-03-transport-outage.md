@@ -54,3 +54,18 @@ The published `@causal-order/testing` APIs recorded the following for the non-ou
 - ✅ Final accounting and drain checks passed for the workload that ran
 
 This evidence does not satisfy T03. A corrected eight-hour run and a new evidence tag are required.
+
+## Run 2026-07-31T11-07-07Z-t03-transport-outage-8n-8h
+
+Result folder: `artifacts/runs/2026-07-31T11-07-07Z-t03-transport-outage-8n-8h`
+
+- **Verdict**: `PASS`
+- **Events generated**: 562,529
+- **Anomalies detected and resolved**: 2893
+- **Data loss**: 0
+- **Pending work**: 0
+- **Monitor scenario**: `monitor-transport-outage-burst`
+
+[Detailed metrics](../artifacts/runs/2026-07-31T11-07-07Z-t03-transport-outage-8n-8h/standard-result.md)
+
+This run satisfies the T03 transport-outage evidence contract.

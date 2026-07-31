@@ -1,3 +1,23 @@
+## T03: transport-outage — 2026-07-31T11-07-07Z-t03-transport-outage-8n-8h
+
+**Verdict**: `PASS` ✅
+
+| Metric | Value |
+| --- | --- |
+| **Events generated** | 562,529 |
+| **Anomalies** | 2893 |
+| **Leakage** | 0 |
+| **Pending work** | 0 |
+
+The recorded scenario matched the T03 evidence contract. Every required fault was observed, all standardized checks passed, and the stack drained cleanly.
+
+**Command**: `npm run t03`  
+**Documentation**: [docs/test-03-transport-outage.md](docs/test-03-transport-outage.md)  
+**Results**: [standard-result.md](artifacts/runs/2026-07-31T11-07-07Z-t03-transport-outage-8n-8h/standard-result.md)  
+**Evidence**: [standard-result.json](artifacts/runs/2026-07-31T11-07-07Z-t03-transport-outage-8n-8h/standard-result.json)
+
+---
+
 ## T12: all-failures
 
 **Evidence status**: `INVALID_FOR_INTENDED_SCENARIO` ⚠️
