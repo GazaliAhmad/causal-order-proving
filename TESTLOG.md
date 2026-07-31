@@ -1,4 +1,4 @@
-## T03: transport-outage — 2026-07-31T11-07-07Z-t03-transport-outage-8n-8h
+## T03: transport-outage — corrected second run (2026-07-31)
 
 **Verdict**: `PASS` ✅
 
@@ -257,7 +257,7 @@ The configured jitter and dark-node lists were present, but the recorded jitter-
 
 ---
 
-## T02: jitter-dark — corrected run (2026-07-30)
+## T02: jitter-dark — corrected second run (2026-07-30)
 
 **Verdict**: `PASS` ✅
 
