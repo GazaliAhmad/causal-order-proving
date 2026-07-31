@@ -53,9 +53,9 @@ npm ci
 
 The lockfile installs the corrected local package candidates:
 
-- `@causal-order/transport` 0.2.1
+- `@causal-order/transport` 0.2.2
 - `@causal-order/monitor` 0.6.1
-- `@causal-order/testing` 0.3.3
+- `@causal-order/testing` 0.3.4
 
 The archives under `.release-candidates/` are required until these versions are
 published to npm.

@@ -71,9 +71,9 @@ const TEST_CONTRACTS = {
 };
 
 const REQUIRED_PACKAGE_VERSIONS = {
-  "@causal-order/transport": "0.2.1",
+  "@causal-order/transport": "0.2.2",
   "@causal-order/monitor": "0.6.1",
-  "@causal-order/testing": "0.3.3",
+  "@causal-order/testing": "0.3.4",
 };
 
 const verifyOnly = process.argv.includes("--verify-only");
@@ -401,7 +401,7 @@ function auditEvidence({
     ["pass", "pass_with_expected_degradation"].includes(
       String(result.result?.verdict ?? "").toLowerCase(),
     ),
-    `Cannot finalize harness verdict ${result.result?.verdict ?? "missing"}`,
+    formatInvalidVerdictMessage({ result, summary }),
   );
   requireCondition(
     Array.isArray(result.checks) &&
@@ -473,6 +473,10 @@ function auditRecordedFaults({
 
   const analysis = summary.monitor?.analysis ?? {};
   if (contract.transport) {
+    requireCondition(
+      Number(runConfig.adapterOptions?.maxInFlightSendsPerPeer ?? 0) >= 4096,
+      `T${testNum} requires adapter maxInFlightSendsPerPeer >= 4096`,
+    );
     requireCondition(
       Number(summary.monitor?.scenarioTransportOutages ?? 0) > 0,
       `${contract.monitorScenario} did not inject a mid-run transport outage`,
@@ -570,6 +574,21 @@ function requireCondition(condition, message) {
   if (!condition) {
     throw new Error(message);
   }
+}
+
+function formatInvalidVerdictMessage({ result, summary }) {
+  const verdict = result.result?.verdict ?? "missing";
+  const reasons = summary.outcome?.verdictReasons ?? [];
+  const failure = summary.outcome?.failure;
+  const details = [
+    ...reasons,
+    failure?.phase && failure?.code
+      ? `${failure.phase}/${failure.code}: ${failure.message}`
+      : failure?.message,
+  ].filter(Boolean);
+  return `Cannot finalize harness verdict ${verdict}${
+    details.length > 0 ? `: ${details.join("; ")}` : ""
+  }`;
 }
 
 function run(command, args, options = {}) {
