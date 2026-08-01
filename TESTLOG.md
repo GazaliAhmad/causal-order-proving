@@ -1,3 +1,23 @@
+## T06: nodes-transport — 2026-07-31T22-51-29Z-t06-nodes-transport-8n-8h
+
+**Verdict**: `PASS` ✅
+
+| Metric | Value |
+| --- | --- |
+| **Events generated** | 551,816 |
+| **Anomalies** | 3343 |
+| **Leakage** | 0 |
+| **Pending work** | 0 |
+
+The recorded scenario matched the T06 evidence contract. Every required fault was observed, all standardized checks passed, and the stack drained cleanly.
+
+**Command**: `npm run t06`  
+**Documentation**: [docs/test-06-nodes-transport.md](docs/test-06-nodes-transport.md)  
+**Results**: [standard-result.md](artifacts/runs/2026-07-31T22-51-29Z-t06-nodes-transport-8n-8h/standard-result.md)  
+**Evidence**: [standard-result.json](artifacts/runs/2026-07-31T22-51-29Z-t06-nodes-transport-8n-8h/standard-result.json)
+
+---
+
 ## T03: transport-outage — corrected second run (2026-07-31)
 
 **Verdict**: `PASS` ✅

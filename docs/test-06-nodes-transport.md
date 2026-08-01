@@ -55,3 +55,18 @@ The published `@causal-order/testing` APIs recorded the following for the partia
 - ✅ Final accounting and drain checks passed for the partial scenario
 
 This evidence does not satisfy T06. A corrected eight-hour run and a new evidence tag are required.
+
+## Run 2026-07-31T22-51-29Z-t06-nodes-transport-8n-8h
+
+Result folder: `artifacts/runs/2026-07-31T22-51-29Z-t06-nodes-transport-8n-8h`
+
+- **Verdict**: `PASS`
+- **Events generated**: 551,816
+- **Anomalies detected and resolved**: 3343
+- **Data loss**: 0
+- **Pending work**: 0
+- **Monitor scenario**: `monitor-transport-outage-burst`
+
+[Detailed metrics](../artifacts/runs/2026-07-31T22-51-29Z-t06-nodes-transport-8n-8h/standard-result.md)
+
+This run satisfies the T06 nodes-transport evidence contract.
