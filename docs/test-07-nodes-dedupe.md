@@ -52,3 +52,18 @@ The published `@causal-order/testing` APIs recorded the following for the dedupe
 - ✅ Dedupe outage and final drain were observed
 
 This evidence does not satisfy T07. A corrected eight-hour run and a new evidence tag are required.
+
+## Run 2026-08-01T07-39-29Z-t07-nodes-dedupe-8n-8h
+
+Result folder: `artifacts/runs/2026-08-01T07-39-29Z-t07-nodes-dedupe-8n-8h`
+
+- **Verdict**: `PASS_WITH_EXPECTED_DEGRADATION`
+- **Events generated**: 551,008
+- **Anomalies detected and resolved**: 1202
+- **Data loss**: 0
+- **Pending work**: 0
+- **Monitor scenario**: `monitor-dedupe-outage`
+
+[Detailed metrics](../artifacts/runs/2026-08-01T07-39-29Z-t07-nodes-dedupe-8n-8h/standard-result.md)
+
+This run satisfies the T07 nodes-dedupe evidence contract.

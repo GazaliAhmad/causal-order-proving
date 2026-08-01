@@ -1,3 +1,23 @@
+## T07: nodes-dedupe — 2026-08-01T07-39-29Z-t07-nodes-dedupe-8n-8h
+
+**Verdict**: `PASS_WITH_EXPECTED_DEGRADATION` ✅
+
+| Metric | Value |
+| --- | --- |
+| **Events generated** | 551,008 |
+| **Anomalies** | 1202 |
+| **Leakage** | 0 |
+| **Pending work** | 0 |
+
+The recorded scenario matched the T07 evidence contract. Every required fault was observed, all standardized checks passed, and the stack drained cleanly.
+
+**Command**: `npm run t07`  
+**Documentation**: [docs/test-07-nodes-dedupe.md](docs/test-07-nodes-dedupe.md)  
+**Results**: [standard-result.md](artifacts/runs/2026-08-01T07-39-29Z-t07-nodes-dedupe-8n-8h/standard-result.md)  
+**Evidence**: [standard-result.json](artifacts/runs/2026-08-01T07-39-29Z-t07-nodes-dedupe-8n-8h/standard-result.json)
+
+---
+
 ## T06: nodes-transport — 2026-07-31T22-51-29Z-t06-nodes-transport-8n-8h
 
 **Verdict**: `PASS` ✅
