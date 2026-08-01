@@ -171,6 +171,7 @@ function renderMarkdown(result) {
 | Transport received | ${result.traffic.received} |
 | Dedupe accepted | ${result.traffic.dedupeAccepted} |
 | Dedupe dropped | ${result.traffic.dedupeDropped} |
+| Dedupe bypassed | ${result.traffic.dedupeBypassed} |
 | Ordered | ${result.traffic.ordered} |
 | Received rate | ${result.traffic.receivedPerSecond} events/s |
 | Duplicate rate | ${result.traffic.duplicateRatePercent}% |
@@ -235,6 +236,7 @@ export async function standardizeResult(inputPath, testIdOverride, startedAfterM
   const received = number(summary.transport?.receivedEvents);
   const dedupeAccepted = number(summary.dedupe?.acceptedEvents);
   const dedupeDropped = number(summary.dedupe?.droppedDuplicates);
+  const dedupeBypassed = number(summary.monitor?.forwardedToOrder);
   const ordered = number(summary.stream?.orderedEvents);
   const wallElapsedMs = number(summary.timing?.wallElapsedMs);
   const peakRssBytes = Math.max(0, ...heartbeats.map((entry) => number(entry.rssBytes)));
@@ -310,13 +312,15 @@ export async function standardizeResult(inputPath, testIdOverride, startedAfterM
       received,
       dedupeAccepted,
       dedupeDropped,
+      dedupeBypassed,
       ordered,
       receivedPerSecond: round(received / Math.max(wallElapsedMs / 1_000, 1)),
       duplicateRatePercent: round(percent(dedupeDropped, received)),
       generatedToSentDelta: sent - generated - duplicatesInjected,
       sentToReceivedDelta: received - sent,
-      receivedToDedupeDelta: received - dedupeAccepted - dedupeDropped,
-      acceptedToOrderedDelta: dedupeAccepted - ordered,
+      receivedToDedupeDelta:
+        received - dedupeAccepted - dedupeDropped - dedupeBypassed,
+      acceptedToOrderedDelta: dedupeAccepted + dedupeBypassed - ordered,
     },
     nodes: (summary.config?.nodeIds ?? []).map((nodeId) => ({
       nodeId,
@@ -451,14 +455,14 @@ export async function standardizeResult(inputPath, testIdOverride, startedAfterM
     ),
     check(
       "ACC-03",
-      "received = accepted + dropped",
+      "received = accepted + dropped + bypassed",
       result.traffic.receivedToDedupeDelta,
       0,
       result.traffic.receivedToDedupeDelta === 0,
     ),
     check(
       "ACC-04",
-      "dedupe accepted = ordered",
+      "dedupe accepted + bypassed = ordered",
       result.traffic.acceptedToOrderedDelta,
       0,
       result.traffic.acceptedToOrderedDelta === 0,

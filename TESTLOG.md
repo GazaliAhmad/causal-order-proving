@@ -5,11 +5,25 @@
 | Metric | Value |
 | --- | --- |
 | **Events generated** | 551,008 |
-| **Anomalies** | 1202 |
-| **Leakage** | 0 |
+| **Duplicates injected** | 1,748 |
+| **Transport received** | 552,756 |
+| **Dedupe accepted / dropped** | 536,254 / 1,705 |
+| **Dedupe bypassed** | 14,797 |
+| **Ordered** | 551,051 |
+| **Anomalies** | 1,202 (1,070 sequence regressions, 89 late arrivals, 43 duplicate events) |
+| **Data loss** | 0 |
 | **Pending work** | 0 |
 
-The recorded scenario matched the T07 evidence contract. Every required fault was observed, all standardized checks passed, and the stack drained cleanly.
+The corrected run matched the T07 evidence contract. Node jitter on edge-a,
+19 dark-window/reconnect cycles on edge-b, and the dedupe outage were all
+observed. During the outage, the monitor sent 14,797 events through its bounded
+direct-to-order path; 43 duplicate events consequently reached ordering, so the
+scenario-aware verdict is `PASS_WITH_EXPECTED_DEGRADATION`.
+
+All transport receipts were accounted for as dedupe-accepted, dedupe-dropped,
+or bypassed events. All standardized checks passed, no accepted work was lost,
+and the monitor, ordering, callback, lifecycle, and resource shutdown barriers
+drained with no pending work.
 
 **Command**: `npm run t07`  
 **Documentation**: [docs/test-07-nodes-dedupe.md](docs/test-07-nodes-dedupe.md)  

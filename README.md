@@ -28,14 +28,24 @@ Executed runs are recorded in [TESTLOG.md](TESTLOG.md). Suggested stack improvem
 
 ## Qualification status
 
-The corrected second runs for the first two fault scenarios passed their intended evidence contracts:
+Corrected second runs for four fault scenarios passed their intended evidence contracts:
 
 | Test | Corrected run | Verdict |
 | --- | --- | --- |
 | T02 — node jitter and dark-node recovery | 2026-07-30 | `PASS` |
 | T03 — transport outage | 2026-07-31 | `PASS` |
+| T06 — nodes and transport fail together | 2026-07-31 | `PASS` |
+| T07 — nodes and dedupe fail together | 2026-08-01 | `PASS_WITH_EXPECTED_DEGRADATION` |
 
-Both runs observed their required faults, passed all standardized checks, recorded zero leakage and pending work, and drained cleanly. See the [T02 evidence](artifacts/runs/2026-07-30T13-01-39Z-t02-jitter-dark-8n-8h/standard-result.md) and [T03 evidence](artifacts/runs/2026-07-31T11-07-07Z-t03-transport-outage-8n-8h/standard-result.md).
+All four runs observed their required faults, passed all standardized checks,
+recorded no data loss or pending work, and drained cleanly. T07's expected
+degradation reflects the bounded, observable direct-to-order path during the
+dedupe outage: 14,797 events bypassed dedupe and 43 duplicate events reached
+ordering.
+See the [T02 evidence](artifacts/runs/2026-07-30T13-01-39Z-t02-jitter-dark-8n-8h/standard-result.md),
+[T03 evidence](artifacts/runs/2026-07-31T11-07-07Z-t03-transport-outage-8n-8h/standard-result.md),
+[T06 evidence](artifacts/runs/2026-07-31T22-51-29Z-t06-nodes-transport-8n-8h/standard-result.md), and
+[T07 evidence](artifacts/runs/2026-08-01T07-39-29Z-t07-nodes-dedupe-8n-8h/standard-result.md).
 
 ## Evidence correction
 
@@ -52,7 +62,7 @@ Eight earlier published runs are retained for auditability but are invalid for t
 | T10 | `INVALID_FOR_INTENDED_SCENARIO` | Dedupe and causal-order outages; no transport outage |
 | T12 | `INVALID_FOR_INTENDED_SCENARIO` | Dedupe and causal-order outages; neither configured node faults nor a transport outage were observed |
 
-The recorded harness `PASS` verdicts for these earlier runs apply only to the scenarios that actually ran. They do not prove the intended T02, T03, T06, T07, T08, T09, T10, or T12 claims. The original artifacts and tags remain available as retracted evidence. T02 and T03 have since passed corrected second runs with new evidence; the remaining invalid scenarios still require corrected runs and new evidence tags.
+The recorded harness `PASS` verdicts for these earlier runs apply only to the scenarios that actually ran. They do not prove the intended T02, T03, T06, T07, T08, T09, T10, or T12 claims. The original artifacts and tags remain available as retracted evidence. T02, T03, T06, and T07 have since passed corrected second runs with new evidence; T08, T09, T10, and T12 still require corrected runs and new evidence tags.
 
 ## Install
 
