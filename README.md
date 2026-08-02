@@ -75,8 +75,9 @@ npm ci
 The lockfile installs the corrected local package candidates:
 
 - `@causal-order/transport` 0.2.2
-- `@causal-order/monitor` 0.6.1
-- `@causal-order/testing` 0.3.4
+- `@causal-order/monitor` 0.6.2
+- `@causal-order/testing` 0.3.5
+- `@causal-order/dedupe` 1.2.1
 
 The archives under `.release-candidates/` are required until these versions are
 published to npm.
@@ -95,6 +96,29 @@ Start a test with its canonical npm command:
 npm run t03
 ```
 
+The corrected composite-fault runs are launched with:
+
+```bash
+npm run t09
+npm run t10
+npm run t12
+```
+
+Each of these commands creates a unique local state directory containing a
+disk-backed monitor reservoir and SQLite dedupe identity ledger. The ledger is
+bounded to 2,000,000 identities and fails closed at capacity instead of
+silently evicting processed identities. For T10 and T12, the 900-second
+in-memory dedupe window is retained only as a fast path; correctness does not
+assume that the next outage or replay horizon matches an earlier run.
+
+T09 deliberately exercises a dedupe-bypass interval and may therefore finish
+with `PASS_WITH_EXPECTED_DEGRADATION`. The durable identity ledger protects
+normal and recovered routes through dedupe, but cannot protect identities that
+intentionally bypass dedupe.
+
+Qualifying evidence must use the commands as written: eight nodes, eight hours,
+and `--time-scale 1`. Shortened or accelerated diagnostics do not qualify.
+
 After the eight-hour run completes, use the exact generated folder name:
 
 ```bash
@@ -104,8 +128,10 @@ npm run finalize-test -- 2026-07-30T12-00-00Z-t03-transport-outage-8n-8h
 `finalize-test` verifies the package versions, eight-node/eight-hour
 configuration, scenario ID, required fault transitions, node-fault counters,
 final verdict, and standardized checks before it writes documentation or
-creates a tag. Existing evidence tags are preserved, so a corrected rerun uses
-the next available tag such as `evidence-t03-v2`.
+creates a tag. For T09, T10, and T12 it also requires evidence of a disk-backed
+monitor reservoir, a configured finite durable identity capacity, and recorded
+durable-ledger identities. Existing evidence tags are preserved, so a
+corrected rerun uses the next available tag such as `evidence-t03-v2`.
 
 To validate a completed folder without writing documentation, committing,
 tagging, or pushing:

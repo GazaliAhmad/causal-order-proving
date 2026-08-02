@@ -197,7 +197,11 @@ Proves:
 - upstream non-delivery and downstream degradation are not conflated;
 - any work accepted before or during the overlap remains accounted for;
 - bypass behavior occurs only while allowed; and
-- normal acknowledged delivery through dedupe resumes.
+- normal acknowledged delivery through dedupe resumes;
+- monitor state and dedupe identities on the normal/recovered route are durable
+  without assuming a previously observed outage horizon; and
+- deliberate bypass remains explicitly degraded because bypassed identities do
+  not pass through the dedupe ledger.
 
 Expected verdict: scenario-aware `pass` or `pass_with_expected_degradation`.
 
@@ -210,7 +214,9 @@ Proves:
 - monitor retains accepted work while ordering is unavailable;
 - transport recovery does not overwhelm or bypass the buffered recovery path;
 - replay passes through dedupe before ordering; and
-- acknowledgment, replay, and shutdown barriers all settle.
+- acknowledgment, replay, and shutdown barriers all settle; and
+- replay identity protection uses finite, durable storage rather than treating
+  the configured in-memory window as a forecast of the next outage.
 
 Expected verdict: `pass`.
 
@@ -241,7 +247,9 @@ Proves:
 - monitor contains all accepted work while downstream stages are unusable;
 - recovery restores the complete path without an unsafe shortcut;
 - rejoin, reconnect, dedupe, replay, and ordering converge; and
-- final state and shutdown are fully drained.
+- final state and shutdown are fully drained; and
+- monitor backlog and dedupe identity state are durable and capacity-bounded,
+  with exhaustion failing closed.
 
 Expected verdict: scenario-aware `pass`.
 

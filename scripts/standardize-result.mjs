@@ -520,7 +520,10 @@ async function main() {
   const testId =
     testIdIndex >= 0 && args[testIdIndex + 1] ? args[testIdIndex + 1] : undefined;
   const inputPath = args.find((value, index) => {
-    if (value === "--test-id" || index === testIdIndex + 1) {
+    if (
+      value === "--test-id" ||
+      (testIdIndex >= 0 && index === testIdIndex + 1)
+    ) {
       return false;
     }
     return !value.startsWith("--");

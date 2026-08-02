@@ -104,47 +104,36 @@ npx --no-install causal-order-testing-adapter-runtime `
 ### T08 — Nodes and causal-order fail together
 
 ```powershell
-npx --no-install causal-order-testing-adapter-runtime `
-  --adapter @causal-order/transport/testing `
-  --monitor `
-  --monitor-scenario monitor-order-outage `
-  --jitter-nodes edge-a `
-  --dark-nodes edge-b `
-  --dark-start-after 10m `
-  --duration 8h `
-  --time-scale 1 `
-  --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h `
-  --profile typical-real-world-mesh `
-  --run-name T08-nodes-order-8n-8h
+npm run t08
 ```
+
+The T08 wrapper creates a unique durable state directory for every run. It uses
+a disk-backed monitor reservoir and a capacity-bounded SQLite dedupe identity
+ledger, so correctness does not depend on projecting a previously observed
+outage or replay duration into the new run. The 900-second in-memory window is
+retained only as a fast-path optimization. Durable identity capacity is
+2,000,000 entries; exhaustion fails closed instead of evicting identities.
 
 ### T09 — Transport and dedupe fail together
 
 ```powershell
-npx --no-install causal-order-testing-adapter-runtime `
-  --adapter @causal-order/transport/testing `
-  --monitor `
-  --monitor-scenario monitor-dual-outage `
-  --duration 8h `
-  --time-scale 1 `
-  --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h `
-  --profile typical-real-world-mesh `
-  --run-name T09-transport-dedupe-8n-8h
+npm run t09
 ```
+
+T09 uses isolated disk-backed monitor and dedupe state with a finite durable
+identity capacity. The deliberate dedupe-bypass interval remains expected
+degradation: identities that bypass dedupe cannot be protected by its ledger.
+Normal and recovered routes through dedupe do use the durable ledger.
 
 ### T10 — Transport and causal-order fail together
 
 ```powershell
-npx --no-install causal-order-testing-adapter-runtime `
-  --adapter @causal-order/transport/testing `
-  --monitor `
-  --monitor-scenario monitor-dual-outage `
-  --duration 8h `
-  --time-scale 1 `
-  --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h `
-  --profile typical-real-world-mesh `
-  --run-name T10-transport-order-8n-8h
+npm run t10
 ```
+
+T10 uses isolated disk-backed monitor and dedupe state. Its 900-second
+in-memory window is only a fast path; correctness does not assume that the next
+outage or recovery horizon matches a previous run.
 
 ### T11 — Dedupe and causal-order fail together
 
@@ -153,6 +142,7 @@ npx --no-install causal-order-testing-adapter-runtime `
   --adapter @causal-order/transport/testing `
   --monitor `
   --monitor-scenario monitor-dual-outage `
+  --dedupe-config configs/order-outage-dedupe.json `
   --duration 8h `
   --time-scale 1 `
   --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h `
@@ -163,19 +153,12 @@ npx --no-install causal-order-testing-adapter-runtime `
 ### T12 — Nodes, transport, dedupe, and causal-order fail together
 
 ```powershell
-npx --no-install causal-order-testing-adapter-runtime `
-  --adapter @causal-order/transport/testing `
-  --monitor `
-  --monitor-scenario monitor-dual-outage `
-  --jitter-nodes edge-a `
-  --dark-nodes edge-b `
-  --dark-start-after 10m `
-  --duration 8h `
-  --time-scale 1 `
-  --node-ids edge-a,edge-b,edge-c,edge-d,edge-e,edge-f,edge-g,edge-h `
-  --profile typical-real-world-mesh `
-  --run-name T12-all-failures-8n-8h
+npm run t12
 ```
+
+T12 uses the same isolated, capacity-bounded durable state while combining the
+node, transport, dedupe, and ordering faults. Capacity exhaustion fails closed
+instead of silently evicting processed identities.
 
 ## Notes
 

@@ -41,18 +41,21 @@ const TEST_CONTRACTS = {
     monitorScenario: "monitor-order-outage",
     nodeFaults: true,
     order: true,
+    durableReplay: true,
   },
   "09": {
     slug: "transport-dedupe",
     monitorScenario: "monitor-transport-dedupe-outage",
     transport: true,
     dedupe: true,
+    durableStorage: true,
   },
   "10": {
     slug: "transport-order",
     monitorScenario: "monitor-transport-order-outage",
     transport: true,
     order: true,
+    durableStorage: true,
   },
   "11": {
     slug: "dedupe-order",
@@ -67,13 +70,15 @@ const TEST_CONTRACTS = {
     transport: true,
     dedupe: true,
     order: true,
+    durableStorage: true,
   },
 };
 
 const REQUIRED_PACKAGE_VERSIONS = {
   "@causal-order/transport": "0.2.2",
-  "@causal-order/monitor": "0.6.1",
-  "@causal-order/testing": "0.3.4",
+  "@causal-order/monitor": "0.6.2",
+  "@causal-order/testing": "0.3.5",
+  "@causal-order/dedupe": "1.2.1",
 };
 
 const verifyOnly = process.argv.includes("--verify-only");
@@ -468,6 +473,35 @@ function auditRecordedFaults({
     requireCondition(
       jitterNodes.length === 0 && darkNodes.length === 0,
       `T${testNum} unexpectedly configured node faults`,
+    );
+  }
+
+  if (contract.durableReplay || contract.durableStorage) {
+    const dedupeConfig = runConfig.dedupeConfig ?? {};
+    requireCondition(
+      typeof dedupeConfig.durableIdentityLedgerPath === "string" &&
+        dedupeConfig.durableIdentityLedgerPath.length > 0,
+      `T${testNum} requires a durable dedupe identity ledger`,
+    );
+    requireCondition(
+      Number.isSafeInteger(Number(dedupeConfig.maxDurableIdentities)) &&
+        Number(dedupeConfig.maxDurableIdentities) > 0,
+      `T${testNum} requires a finite positive durable identity capacity`,
+    );
+    requireCondition(
+      typeof runConfig.monitorConfig?.databasePath === "string" &&
+        runConfig.monitorConfig.databasePath.length > 0 &&
+        runConfig.monitorConfig.databasePath !== ":memory:",
+      `T${testNum} requires a durable monitor reservoir`,
+    );
+    requireCondition(
+      Number(summary.dedupe?.durableLedger?.storedIdentities ?? 0) > 0,
+      `T${testNum} did not record durable dedupe identity evidence`,
+    );
+    requireCondition(
+      Number(summary.dedupe?.durableLedger?.maxIdentities ?? 0) ===
+        Number(dedupeConfig.maxDurableIdentities),
+      `T${testNum} durable identity capacity evidence does not match configuration`,
     );
   }
 
