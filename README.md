@@ -76,7 +76,7 @@ The lockfile installs the corrected local package candidates:
 
 - `@causal-order/transport` 0.2.2
 - `@causal-order/monitor` 0.6.2
-- `@causal-order/testing` 0.3.5
+- `@causal-order/testing` 0.3.4
 - `@causal-order/dedupe` 1.2.1
 
 The archives under `.release-candidates/` are required until these versions are

@@ -77,7 +77,7 @@ const TEST_CONTRACTS = {
 const REQUIRED_PACKAGE_VERSIONS = {
   "@causal-order/transport": "0.2.2",
   "@causal-order/monitor": "0.6.2",
-  "@causal-order/testing": "0.3.5",
+  "@causal-order/testing": "0.3.4",
   "@causal-order/dedupe": "1.2.1",
 };
 

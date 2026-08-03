@@ -32,7 +32,7 @@
   "dependencies": {
     "@causal-order/dedupe": "file:.release-candidates/causal-order-dedupe-1.2.1.tgz",
     "@causal-order/monitor": "file:.release-candidates/causal-order-monitor-0.6.2.tgz",
-    "@causal-order/testing": "file:.release-candidates/causal-order-testing-0.3.5.tgz",
+    "@causal-order/testing": "file:.release-candidates/causal-order-testing-0.3.4.tgz",
     "@causal-order/transport": "file:.release-candidates/causal-order-transport-0.2.2.tgz",
     "causal-order": "^1.0.1"
   }
