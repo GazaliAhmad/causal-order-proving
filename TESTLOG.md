@@ -1,3 +1,23 @@
+## T08: nodes-order — 2026-08-02T15-37-18Z-t08-nodes-order-8n-8h
+
+**Verdict**: `PASS` ✅
+
+| Metric | Value |
+| --- | --- |
+| **Events generated** | 550,135 |
+| **Anomalies** | 1068 |
+| **Leakage** | 0 |
+| **Pending work** | 0 |
+
+The recorded scenario matched the T08 evidence contract. Every required fault was observed, all standardized checks passed, and the stack drained cleanly.
+
+**Command**: `npm run t08`  
+**Documentation**: [docs/test-08-nodes-order.md](docs/test-08-nodes-order.md)  
+**Results**: [standard-result.md](artifacts/runs/2026-08-02T15-37-18Z-t08-nodes-order-8n-8h/standard-result.md)  
+**Evidence**: [standard-result.json](artifacts/runs/2026-08-02T15-37-18Z-t08-nodes-order-8n-8h/standard-result.json)
+
+---
+
 ## T07: nodes-dedupe — 2026-08-01T07-39-29Z-t07-nodes-dedupe-8n-8h
 
 **Verdict**: `PASS_WITH_EXPECTED_DEGRADATION` ✅

@@ -52,3 +52,18 @@ The published `@causal-order/testing` APIs recorded the following for the causal
 - ✅ Causal-order outage, replay, and final drain were observed
 
 This evidence does not satisfy T08. A corrected eight-hour run and a new evidence tag are required.
+
+## Run 2026-08-02T15-37-18Z-t08-nodes-order-8n-8h
+
+Result folder: `artifacts/runs/2026-08-02T15-37-18Z-t08-nodes-order-8n-8h`
+
+- **Verdict**: `PASS`
+- **Events generated**: 550,135
+- **Anomalies detected and resolved**: 1068
+- **Data loss**: 0
+- **Pending work**: 0
+- **Monitor scenario**: `monitor-order-outage`
+
+[Detailed metrics](../artifacts/runs/2026-08-02T15-37-18Z-t08-nodes-order-8n-8h/standard-result.md)
+
+This run satisfies the T08 nodes-order evidence contract.
