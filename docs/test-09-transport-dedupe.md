@@ -54,3 +54,18 @@ The published `@causal-order/testing` APIs recorded the following for the scenar
 - ✅ Final accounting and drain checks passed for the actual scenario
 
 This evidence does not satisfy T09. A corrected eight-hour run and a new evidence tag are required.
+
+## Run 2026-08-03T01-15-43Z-t09-transport-dedupe-8n-8h
+
+Result folder: `artifacts/runs/2026-08-03T01-15-43Z-t09-transport-dedupe-8n-8h`
+
+- **Verdict**: `PASS_WITH_EXPECTED_DEGRADATION`
+- **Events generated**: 562,987
+- **Anomalies detected and resolved**: 2855
+- **Data loss**: 0
+- **Pending work**: 0
+- **Monitor scenario**: `monitor-transport-dedupe-outage`
+
+[Detailed metrics](../artifacts/runs/2026-08-03T01-15-43Z-t09-transport-dedupe-8n-8h/standard-result.md)
+
+This run satisfies the T09 transport-dedupe evidence contract.

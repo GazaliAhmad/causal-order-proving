@@ -1,3 +1,23 @@
+## T09: transport-dedupe — 2026-08-03T01-15-43Z-t09-transport-dedupe-8n-8h
+
+**Verdict**: `PASS_WITH_EXPECTED_DEGRADATION` ✅
+
+| Metric | Value |
+| --- | --- |
+| **Events generated** | 562,987 |
+| **Anomalies** | 2855 |
+| **Leakage** | 0 |
+| **Pending work** | 0 |
+
+The recorded scenario matched the T09 evidence contract. Every required fault was observed, all standardized checks passed, and the stack drained cleanly.
+
+**Command**: `npm run t09`  
+**Documentation**: [docs/test-09-transport-dedupe.md](docs/test-09-transport-dedupe.md)  
+**Results**: [standard-result.md](artifacts/runs/2026-08-03T01-15-43Z-t09-transport-dedupe-8n-8h/standard-result.md)  
+**Evidence**: [standard-result.json](artifacts/runs/2026-08-03T01-15-43Z-t09-transport-dedupe-8n-8h/standard-result.json)
+
+---
+
 ## T08: nodes-order — 2026-08-02T15-37-18Z-t08-nodes-order-8n-8h
 
 **Verdict**: `PASS` ✅
