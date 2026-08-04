@@ -56,3 +56,18 @@ The published `@causal-order/testing` APIs recorded the following for the scenar
 - ✅ Final accounting and drain checks passed for the actual scenario
 
 This evidence does not satisfy T10. A corrected eight-hour run and a new evidence tag are required.
+
+## Run 2026-08-03T11-40-28Z-t10-transport-order-8n-8h
+
+Result folder: `artifacts/runs/2026-08-03T11-40-28Z-t10-transport-order-8n-8h`
+
+- **Verdict**: `PASS`
+- **Events generated**: 563,279
+- **Anomalies detected and resolved**: 2815
+- **Data loss**: 0
+- **Pending work**: 0
+- **Monitor scenario**: `monitor-transport-order-outage`
+
+[Detailed metrics](../artifacts/runs/2026-08-03T11-40-28Z-t10-transport-order-8n-8h/standard-result.md)
+
+This run satisfies the T10 transport-order evidence contract.

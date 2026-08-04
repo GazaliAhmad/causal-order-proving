@@ -1,3 +1,23 @@
+## T10: transport-order — 2026-08-03T11-40-28Z-t10-transport-order-8n-8h
+
+**Verdict**: `PASS` ✅
+
+| Metric | Value |
+| --- | --- |
+| **Events generated** | 563,279 |
+| **Anomalies** | 2815 |
+| **Leakage** | 0 |
+| **Pending work** | 0 |
+
+The recorded scenario matched the T10 evidence contract. Every required fault was observed, all standardized checks passed, and the stack drained cleanly.
+
+**Command**: `npm run t10`  
+**Documentation**: [docs/test-10-transport-order.md](docs/test-10-transport-order.md)  
+**Results**: [standard-result.md](artifacts/runs/2026-08-03T11-40-28Z-t10-transport-order-8n-8h/standard-result.md)  
+**Evidence**: [standard-result.json](artifacts/runs/2026-08-03T11-40-28Z-t10-transport-order-8n-8h/standard-result.json)
+
+---
+
 ## T09: transport-dedupe — 2026-08-03T01-15-43Z-t09-transport-dedupe-8n-8h
 
 **Verdict**: `PASS_WITH_EXPECTED_DEGRADATION` ✅
