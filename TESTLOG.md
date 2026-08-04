@@ -1,3 +1,23 @@
+## T12: all-failures — 2026-08-04T01-03-41Z-t12-all-failures-8n-8h
+
+**Verdict**: `PASS` ✅
+
+| Metric | Value |
+| --- | --- |
+| **Events generated** | 550,686 |
+| **Anomalies** | 3082 |
+| **Leakage** | 0 |
+| **Pending work** | 0 |
+
+The recorded scenario matched the T12 evidence contract. Every required fault was observed, all standardized checks passed, and the stack drained cleanly.
+
+**Command**: `npm run t12`  
+**Documentation**: [docs/test-12-all-failures.md](docs/test-12-all-failures.md)  
+**Results**: [standard-result.md](artifacts/runs/2026-08-04T01-03-41Z-t12-all-failures-8n-8h/standard-result.md)  
+**Evidence**: [standard-result.json](artifacts/runs/2026-08-04T01-03-41Z-t12-all-failures-8n-8h/standard-result.json)
+
+---
+
 ## T10: transport-order — 2026-08-03T11-40-28Z-t10-transport-order-8n-8h
 
 **Verdict**: `PASS` ✅
